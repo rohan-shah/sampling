@@ -8,7 +8,7 @@ namespace sampling
 	using std::log;
 	using boost::multiprecision::exp;
 	using std::exp;
-	void pareto(paretoSamplingArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, std::vector<mpfr_class>& weights, boost::mt19937& randomSource)
+	void pareto(paretoSamplingArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, const std::vector<mpfr_class>& weights, boost::mt19937& randomSource, std::vector<mpfr_class>& copiedWeights)
 	{
 		indices.clear();
 		int nUnits = (int)weights.size();
@@ -37,18 +37,17 @@ namespace sampling
 			cumulative = 0;
 			for(int i = 0; i < nUnits; i++)
 			{
-				cumulative += weights[i];
+				if(!args.deterministicInclusion[i]) cumulative += weights[i];
 			}
 			mpfr_class maxAllowed = cumulative / mpfr_class(args.n - indices.size());
 			//Any weights that are too big are included with probability 1
 			for(int i = 0; i < nUnits; i++)
 			{
-				if(weights[i] >= maxAllowed)
+				if(weights[i] >= maxAllowed && !args.deterministicInclusion[i])
 				{
 					args.deterministicInclusion[i] = true;
 					indices.push_back(i);
 					hasDeterministic = true;
-					weights[i] = 0;
 				}
 			}
 			if(indices.size() > args.n)
@@ -66,11 +65,13 @@ namespace sampling
 			throw std::runtime_error("Divide by zero encountered");
 		}
 		//And also work out the exponential parameters
+		copiedWeights.clear();
+		copiedWeights.resize(nUnits);
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.deterministicInclusion[i])
 			{
-				weights[i] = weights[i]*factor;
+				copiedWeights[i] = weights[i]*factor;
 			}
 		}
 		boost::random::uniform_real_distribution<> standardUniform(0, 1);
@@ -82,7 +83,7 @@ namespace sampling
 			{
 				double uniform = standardUniform(randomSource);
 				paretoSamplingArgs::paretoStatistic newStatistic;
-				mpfr_class value = ((uniform * (1 - weights[i]))/(weights[i]*(1-uniform)));
+				mpfr_class value = ((uniform * (1 - copiedWeights[i]))/(copiedWeights[i]*(1-uniform)));
 				newStatistic.statistic = value.convert_to<double>();
 				newStatistic.order = i;
 				args.paretoStatistics.push_back(newStatistic);

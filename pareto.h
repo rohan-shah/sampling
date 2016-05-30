@@ -24,6 +24,6 @@ namespace sampling
 		std::vector<paretoStatistic> paretoStatistics;
 		bool calculateInclusionProbabilities;
 	};
-	void pareto(paretoSamplingArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, std::vector<mpfr_class>& weights, boost::mt19937& randomSource);
+	void pareto(paretoSamplingArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, const std::vector<mpfr_class>& weights, boost::mt19937& randomSource, std::vector<mpfr_class>& copiedWeights);
 }
 #endif
