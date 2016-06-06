@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.1)
+
+add_executable(samplingTests main.cpp conditionalPoissonSimple.cpp)
+
+target_include_directories(samplingTests PUBLIC ${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR})
+target_link_libraries(samplingTests PUBLIC ${Boost_LIBRARIES} sampling)
+target_compile_definitions(samplingTests PUBLIC BOOST_ALL_NO_LIB BOOST_ALL_DYN_LINK)

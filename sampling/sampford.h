@@ -10,14 +10,25 @@ namespace sampling
 	{
 	public:
 		sampfordMultinomialRejectiveArgs()
+			:copiedWeights(NULL), weights(NULL), inclusionProbabilities(NULL), indices(NULL)
 		{}
+		//A copy of the sampling weights made after deterministically selected units are removed, and then the sizes are rescaled.
+		std::vector<mpfr_class>* copiedWeights;
+		//The size variables for the sampling
+		std::vector<mpfr_class>* weights;
+		//Inclusion probabilities. Contains nUnits values, but only the values for the chosen units are set. 
+		std::vector<mpfr_class>* inclusionProbabilities;
+		//Indices of selected units
+		std::vector<int>* indices;
+		//Number of units to sample
 		std::size_t n;
+		//Working memory
 		std::vector<double> accumulated1;
 		std::vector<double> accumulated2;
 		std::vector<bool> deterministicInclusion;
 		std::vector<int> deterministicIndices;
 	};
-	void sampfordMultinomialRejective(sampfordMultinomialRejectiveArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, std::vector<mpfr_class>& weights, boost::mt19937& randomSource);
+	void sampfordMultinomialRejective(sampfordMultinomialRejectiveArgs& args, boost::mt19937& randomSource);
 	struct sampfordConditionalPoissonRejectiveArgs
 	{
 	public:
@@ -33,10 +44,15 @@ namespace sampling
 	public:
 		paretoSamplingArgs paretoArgs;
 		sampfordFromParetoNaiveArgs()
+			: inclusionProbabilities(NULL), weights(NULL), copiedWeights(NULL), indices(NULL)
 		{}
 		std::size_t n;
+		std::vector<mpfr_class>* inclusionProbabilities;
+		std::vector<mpfr_class>* weights;
+		std::vector<mpfr_class>* copiedWeights;
+		std::vector<int>* indices;
 	};
-	void sampfordFromParetoNaive(sampfordFromParetoNaiveArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, const std::vector<mpfr_class>& weights, boost::mt19937& randomSource, std::vector<mpfr_class>& copiedWeights);
+	void sampfordFromParetoNaive(sampfordFromParetoNaiveArgs& args, boost::mt19937& randomSource);
 
 }
 #endif

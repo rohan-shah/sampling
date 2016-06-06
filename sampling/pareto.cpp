@@ -8,8 +8,11 @@ namespace sampling
 	using std::log;
 	using boost::multiprecision::exp;
 	using std::exp;
-	void pareto(paretoSamplingArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, const std::vector<mpfr_class>& weights, boost::mt19937& randomSource, std::vector<mpfr_class>& copiedWeights)
+	void pareto(paretoSamplingArgs& args, boost::mt19937& randomSource)
 	{
+		std::vector<int>& indices = *args.indices;
+		std::vector<mpfr_class>& weights = *args.weights;
+		std::vector<mpfr_class>& copiedWeights = *args.copiedWeights;
 		indices.clear();
 		int nUnits = (int)weights.size();
 		if((int)args.n > nUnits)
@@ -49,6 +52,10 @@ namespace sampling
 					indices.push_back(i);
 					hasDeterministic = true;
 				}
+				else if(!args.deterministicInclusion[i] && weights[i] == 0)
+				{
+					args.deterministicInclusion[i] = true;
+				}
 			}
 			if(indices.size() > args.n)
 			{
@@ -57,6 +64,11 @@ namespace sampling
 
 		} while(hasDeterministic);
 		int deterministicIndices = (int)indices.size();
+	
+		if(deterministicIndices == (int)args.n)
+		{
+			return;
+		}
 
 		//Rescale the weights so that they sum to n
 		mpfr_class factor = mpfr_class(args.n - deterministicIndices)/ cumulative;
@@ -73,6 +85,7 @@ namespace sampling
 			{
 				copiedWeights[i] = weights[i]*factor;
 			}
+			else copiedWeights[i] = 0;
 		}
 		boost::random::uniform_real_distribution<> standardUniform(0, 1);
 		//Now compute the pareto statistics
@@ -83,7 +96,7 @@ namespace sampling
 			{
 				double uniform = standardUniform(randomSource);
 				paretoSamplingArgs::paretoStatistic newStatistic;
-				mpfr_class value = ((uniform * (1 - copiedWeights[i]))/(copiedWeights[i]*(1-uniform)));
+				mpfr_class value = (uniform * (1 - copiedWeights[i]))/(copiedWeights[i]*(1-uniform));
 				newStatistic.statistic = value.convert_to<double>();
 				newStatistic.order = i;
 				args.paretoStatistics.push_back(newStatistic);
