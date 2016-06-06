@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "conditionalPoisson.h"
-BOOST_AUTO_TEST_CASE(conditionalPoissonSimple, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -30,9 +30,13 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSimple, * boost::unit_test::tolerance(0.0
 		}
 		BOOST_TEST(rescaledWeights[0].convert_to<double>() == 1.0/3.0);
 		BOOST_TEST(rescaledWeights[1].convert_to<double>() == 2.0/3.0);
+		BOOST_TEST(!args.deterministicInclusion[0]);
+		BOOST_TEST(!args.deterministicInclusion[1]);
+		BOOST_TEST(!args.zeroWeights[0]);
+		BOOST_TEST(!args.zeroWeights[1]);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPoissonSimple2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -76,5 +80,11 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.
 		BOOST_TEST(rescaledWeights[0].convert_to<double>() == 3.0/6.0);
 		BOOST_TEST(rescaledWeights[1].convert_to<double>() == 4.0/6.0);
 		BOOST_TEST(rescaledWeights[2].convert_to<double>() == 5.0/6.0);
+		BOOST_TEST(!args.deterministicInclusion[0]);
+		BOOST_TEST(!args.deterministicInclusion[1]);
+		BOOST_TEST(!args.deterministicInclusion[2]);
+		BOOST_TEST(!args.zeroWeights[0]);
+		BOOST_TEST(!args.zeroWeights[1]);
+		BOOST_TEST(!args.zeroWeights[2]);
 	}
 }

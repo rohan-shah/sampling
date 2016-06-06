@@ -32,6 +32,7 @@ namespace sampling
 				inclusionProbabilities[i] = rescaledWeights[i] = 0;
 			}
 		}
+		args.deterministicInclusion.resize(nUnits);
 		if((int)args.n > nUnits - nZeros)
 		{
 			throw std::runtime_error("Input n was too big, or too many units had zero weights");
@@ -44,16 +45,17 @@ namespace sampling
 				if(!args.zeroWeights[i])
 				{
 					rescaledWeights[i] = inclusionProbabilities[i] = 1;
+					args.deterministicInclusion[i] = true;
 					indices.push_back(i);
 				}
 				else
 				{
 					rescaledWeights[i] = inclusionProbabilities[i] = 0;
+					args.deterministicInclusion[i] = false;
 				}
 			}
 			return;
 		}
-		args.deterministicInclusion.resize(nUnits);
 		std::fill(args.deterministicInclusion.begin(), args.deterministicInclusion.end(), false);
 		//Work out which units are going to be deterministically selected. 
 		mpfr_class cumulative;
@@ -65,13 +67,13 @@ namespace sampling
 			cumulative = 0;
 			for(int i = 0; i < nUnits; i++)
 			{
-				cumulative += weights[i];
+				if(!args.deterministicInclusion[i]) cumulative += weights[i];
 			}
 			mpfr_class maxAllowed =  cumulative / mpfr_class(args.n - indices.size());
 			//Any weights that are too big are included with probability 1
 			for(int i = 0; i < nUnits; i++)
 			{
-				if(weights[i] >= maxAllowed)
+				if(weights[i] >= maxAllowed && !args.deterministicInclusion[i])
 				{
 					args.deterministicInclusion[i] = true;
 					indices.push_back(i);
@@ -108,11 +110,15 @@ namespace sampling
 		//And also work out the exponential parameters
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(!args.deterministicInclusion[i])
+			if(args.deterministicInclusion[i])
 			{
-				rescaledWeights[i] = weights[i]*factor;
+				rescaledWeights[i] = 1;
 			}
-			else rescaledWeights[i] = 0;
+			else if(args.zeroWeights[i])
+			{
+				rescaledWeights[i] = 0;
+			}
+			else rescaledWeights[i] = weights[i]*factor;
 		}
 
 		args.exponentialParameters.resize(nUnits);
@@ -120,11 +126,16 @@ namespace sampling
 		mpfr_class sumExponentialParameters = 0;
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(!args.deterministicInclusion[i])
+			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
 			{
 				args.expExponentialParameters[i] = rescaledWeights[i] / (1 - rescaledWeights[i]);
 				args.exponentialParameters[i] = log(args.expExponentialParameters[i]);
 				sumExponentialParameters += args.exponentialParameters[i];
+			}
+			else
+			{
+				args.expExponentialParameters[i] = 0;
+				args.exponentialParameters[i] = 0;
 			}
 		}
 		//Rescale so the exponential parameters sum no zero
@@ -164,16 +175,17 @@ beginSample:
 		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
 		std::vector<bool>& ignore = args.ignore;
 		int nUnits = (int)rescaledWeights.size();
-		int deterministicIndices = 0;
+		int deterministicIndices = 0, ignoreIndices = 0;
 		ignore.resize(nUnits);
 		for(int i = 0; i < nUnits; i++)
 		{
 			ignore[i] = args.deterministicInclusion[i] || args.zeroWeights[i];
-			if(ignore[i]) deterministicIndices++;
+			if(args.deterministicInclusion[i]) deterministicIndices++;
+			if(ignore[i]) ignoreIndices++;
 		}
 		//Now compute the inclusion probabilities
 		inclusionProbabilities.resize(nUnits);
-		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n - deterministicIndices, nUnits - deterministicIndices,args.ignore);
+		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n - deterministicIndices, nUnits - ignoreIndices, args.ignore);
 		mpfr_class expNormalisingConstant = args.expNormalisingConstant(0, args.n - deterministicIndices - 1);
 		for(int unitCounter = 0; unitCounter < nUnits; unitCounter++)
 		{
