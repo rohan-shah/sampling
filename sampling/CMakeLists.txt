@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
-set(CppFiles sampfordBruteForce.cpp conditionalPoisson.cpp sampfordConditionalPoissonRejective.cpp semiDeterministicSampling.cpp sampfordFromParetoNaive.cpp pareto.cpp)
-set(HeaderFiles sampford.h conditionalPoisson.h semiDeterministicSampling.h pareto.h includeMPFRSampling.h)
+set(CppFiles sampfordBruteForce.cpp conditionalPoisson.cpp sampfordConditionalPoissonRejective.cpp semiDeterministicSampling.cpp sampfordFromParetoNaive.cpp pareto.cpp samplingBase.cpp)
+set(HeaderFiles sampford.h conditionalPoisson.h semiDeterministicSampling.h pareto.h includeMPFRSampling.h samplingBase.h)
 
 add_library(sampling STATIC ${CppFiles} ${HeaderFiles})
 target_include_directories(sampling PUBLIC ${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/sampling)

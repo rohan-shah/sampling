@@ -1,5 +1,6 @@
 #include "conditionalPoisson.h"
 #include <boost/random/bernoulli_distribution.hpp>
+#include "samplingBase.h"
 namespace sampling
 {
 	using boost::multiprecision::log;
@@ -15,111 +16,8 @@ namespace sampling
 
 		int nUnits = (int)weights.size();
 
-		indices.clear();
-		rescaledWeights.resize(nUnits);
-		inclusionProbabilities.resize(nUnits);
-
-		//Work out which units have zero weights
-		int nZeros = 0;
-		args.zeroWeights.resize(nUnits);
-		std::fill(args.zeroWeights.begin(), args.zeroWeights.end(), false);
-		for(int i = 0; i < nUnits; i++)
-		{
-			if(weights[i] == 0)
-			{
-				nZeros++;
-				args.zeroWeights[i] = true;
-				inclusionProbabilities[i] = rescaledWeights[i] = 0;
-			}
-		}
-		args.deterministicInclusion.resize(nUnits);
-		if((int)args.n > nUnits - nZeros)
-		{
-			throw std::runtime_error("Input n was too big, or too many units had zero weights");
-		}
-		else if((int)args.n == nUnits - nZeros)
-		{
-			indices.reserve(nUnits);
-			for(int i = 0; i < nUnits; i++)
-			{
-				if(!args.zeroWeights[i])
-				{
-					rescaledWeights[i] = inclusionProbabilities[i] = 1;
-					args.deterministicInclusion[i] = true;
-					indices.push_back(i);
-				}
-				else
-				{
-					rescaledWeights[i] = inclusionProbabilities[i] = 0;
-					args.deterministicInclusion[i] = false;
-				}
-			}
-			return;
-		}
-		std::fill(args.deterministicInclusion.begin(), args.deterministicInclusion.end(), false);
-		//Work out which units are going to be deterministically selected. 
-		mpfr_class cumulative;
-		bool hasDeterministic = false;
-		do
-		{
-			hasDeterministic = false;
-			//Work out sum of weights
-			cumulative = 0;
-			for(int i = 0; i < nUnits; i++)
-			{
-				if(!args.deterministicInclusion[i]) cumulative += weights[i];
-			}
-			mpfr_class maxAllowed =  cumulative / mpfr_class(args.n - indices.size());
-			//Any weights that are too big are included with probability 1
-			for(int i = 0; i < nUnits; i++)
-			{
-				if(weights[i] >= maxAllowed && !args.deterministicInclusion[i])
-				{
-					args.deterministicInclusion[i] = true;
-					indices.push_back(i);
-					hasDeterministic = true;
-					inclusionProbabilities[i] = 1;
-				}
-		}
-		} while(hasDeterministic);
-		int deterministicIndices = (int)indices.size();
-
-		if(deterministicIndices == (int)args.n)
-		{
-			for(int i = 0; i < nUnits; i++)
-			{
-				if(args.deterministicInclusion[i])
-				{
-					inclusionProbabilities[i] = rescaledWeights[i] = 1;
-				}
-				else
-				{
-					if(!args.zeroWeights[i]) throw std::runtime_error("Internal error");
-					inclusionProbabilities[i] = rescaledWeights[i] = 0;
-				}
-			}
-			return;
-		}
-
-		//Rescale the weights so that they sum to n
-		mpfr_class factor = mpfr_class(args.n - deterministicIndices)/ cumulative;
-		if(cumulative == 0)
-		{
-			throw std::runtime_error("Divide by zero encountered");
-		}
-		//And also work out the exponential parameters
-		for(int i = 0; i < nUnits; i++)
-		{
-			if(args.deterministicInclusion[i])
-			{
-				rescaledWeights[i] = 1;
-			}
-			else if(args.zeroWeights[i])
-			{
-				rescaledWeights[i] = 0;
-			}
-			else rescaledWeights[i] = weights[i]*factor;
-		}
+		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
+		int deterministicIndices = indices.size();
 
 		args.exponentialParameters.resize(nUnits);
 		args.expExponentialParameters.resize(nUnits);
