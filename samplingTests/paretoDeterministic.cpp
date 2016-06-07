@@ -1,15 +1,15 @@
 #include <boost/test/unit_test.hpp>
-#include "conditionalPoisson.h"
-BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic1, * boost::unit_test::tolerance(0.00001))
+#include "pareto.h"
+BOOST_AUTO_TEST_CASE(paretoDeterministic1, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonArgs args;
+	sampling::paretoSamplingArgs args;
 	std::vector<int> indices;
 	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
 	args.indices = &indices;
 	args.inclusionProbabilities = &inclusionProbabilities;
 	args.weights = &weights;
 	args.rescaledWeights = &rescaledWeights;
-	args.calculateInclusionProbabilities = true;
+	args.calculateInclusionProbabilities = false;
 
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic1, * boost::unit_test::tolera
 	args.n = 2;
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::pareto(args, randomSource);
 		std::sort(indices.begin(), indices.end());
 		BOOST_TEST((std::find(indices.begin(), indices.end(), 2) != indices.end()));
 		BOOST_TEST(!args.deterministicInclusion[0]);
@@ -39,16 +39,16 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic1, * boost::unit_test::tolera
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)3);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic2, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(paretoDeterministic2, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonArgs args;
+	sampling::paretoSamplingArgs args;
 	std::vector<int> indices;
 	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
 	args.indices = &indices;
 	args.inclusionProbabilities = &inclusionProbabilities;
 	args.weights = &weights;
 	args.rescaledWeights = &rescaledWeights;
-	args.calculateInclusionProbabilities = true;
+	args.calculateInclusionProbabilities = false;
 
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic2, * boost::unit_test::tolera
 	args.n = 3;
 	for(int i = 0; i < 10; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::pareto(args, randomSource);
 		BOOST_TEST(args.deterministicInclusion[0]);
 		BOOST_TEST(args.deterministicInclusion[1]);
 		BOOST_TEST(args.deterministicInclusion[2]);
@@ -80,16 +80,16 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic2, * boost::unit_test::tolera
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)3);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic3, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(paretoDeterministic3, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonArgs args;
+	sampling::paretoSamplingArgs args;
 	std::vector<int> indices;
 	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
 	args.indices = &indices;
 	args.inclusionProbabilities = &inclusionProbabilities;
 	args.weights = &weights;
 	args.rescaledWeights = &rescaledWeights;
-	args.calculateInclusionProbabilities = true;
+	args.calculateInclusionProbabilities = false;
 
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic3, * boost::unit_test::tolera
 	args.n = 8;
 	for(int i = 0; i < 10; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::pareto(args, randomSource);
 		for(int j = 3; j < 10; j++) 
 		{
 			BOOST_TEST(args.deterministicInclusion[j]);

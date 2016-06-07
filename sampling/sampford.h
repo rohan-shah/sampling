@@ -10,10 +10,10 @@ namespace sampling
 	{
 	public:
 		sampfordMultinomialRejectiveArgs()
-			:copiedWeights(NULL), weights(NULL), inclusionProbabilities(NULL), indices(NULL)
+			: rescaledWeights(NULL), weights(NULL), inclusionProbabilities(NULL), indices(NULL)
 		{}
 		//A copy of the sampling weights made after deterministically selected units are removed, and then the sizes are rescaled.
-		std::vector<mpfr_class>* copiedWeights;
+		std::vector<mpfr_class>* rescaledWeights;
 		//The size variables for the sampling
 		std::vector<mpfr_class>* weights;
 		//Inclusion probabilities. Contains nUnits values, but only the values for the chosen units are set. 
@@ -44,12 +44,12 @@ namespace sampling
 	public:
 		paretoSamplingArgs paretoArgs;
 		sampfordFromParetoNaiveArgs()
-			: inclusionProbabilities(NULL), weights(NULL), copiedWeights(NULL), indices(NULL)
+			: inclusionProbabilities(NULL), weights(NULL), rescaledWeights(NULL), indices(NULL)
 		{}
 		std::size_t n;
 		std::vector<mpfr_class>* inclusionProbabilities;
 		std::vector<mpfr_class>* weights;
-		std::vector<mpfr_class>* copiedWeights;
+		std::vector<mpfr_class>* rescaledWeights;
 		std::vector<int>* indices;
 	};
 	void sampfordFromParetoNaive(sampfordFromParetoNaiveArgs& args, boost::mt19937& randomSource);

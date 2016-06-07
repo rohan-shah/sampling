@@ -75,6 +75,10 @@ namespace sampling
 
 		if(deterministicIndices == (int)n)
 		{
+			if(deterministicIndices + nZeros != nUnits)
+			{
+				throw std::runtime_error("There were units with probability zero of selection but non-zero weights");
+			}
 			for(int i = 0; i < nUnits; i++)
 			{
 				if(deterministicInclusion[i])

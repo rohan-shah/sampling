@@ -13,7 +13,6 @@ namespace sampling
 		std::vector<mpfr_class>& weights = *args.weights;
 		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
 		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
-
 		int nUnits = (int)weights.size();
 
 		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;

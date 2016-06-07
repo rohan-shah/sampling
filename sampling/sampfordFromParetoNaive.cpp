@@ -17,19 +17,19 @@ namespace sampling
 		args.paretoArgs.calculateInclusionProbabilities = false;
 		args.paretoArgs.inclusionProbabilities = args.inclusionProbabilities;
 		args.paretoArgs.weights = args.weights;
-		args.paretoArgs.copiedWeights = args.copiedWeights;
+		args.paretoArgs.rescaledWeights = args.rescaledWeights;
 		args.paretoArgs.indices = args.indices;
 
 		pareto(args.paretoArgs, randomSource);
 
 		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
-		std::vector<mpfr_class>& copiedWeights = *args.copiedWeights;
+		std::vector<mpfr_class>& rescaledWeights= *args.rescaledWeights;
 		inclusionProbabilities.resize(nUnits);
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.paretoArgs.deterministicInclusion[i])
 			{
-				inclusionProbabilities[i] = copiedWeights[i];
+				inclusionProbabilities[i] = rescaledWeights[i];
 			}
 			else 
 			{

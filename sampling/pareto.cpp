@@ -1,6 +1,7 @@
 #include "pareto.h"
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
+#include "samplingBase.h"
 #include <functional>
 namespace sampling
 {
@@ -12,81 +13,13 @@ namespace sampling
 	{
 		std::vector<int>& indices = *args.indices;
 		std::vector<mpfr_class>& weights = *args.weights;
-		std::vector<mpfr_class>& copiedWeights = *args.copiedWeights;
-		indices.clear();
+		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
+		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
 		int nUnits = (int)weights.size();
-		if((int)args.n > nUnits)
-		{
-			throw std::runtime_error("Input n was too big");
-		}
-		else if((int)args.n == nUnits)
-		{
-			indices.reserve(nUnits);
-			for(int i = 0; i < nUnits; i++)
-			{
-				indices.push_back(i);
-			}
-			return;
-		}
-		args.deterministicInclusion.resize(nUnits);
-		std::fill(args.deterministicInclusion.begin(), args.deterministicInclusion.end(), false);
-		//Work out which units are going to be deterministically selected. 
-		mpfr_class cumulative;
-		bool hasDeterministic = false;
-		do
-		{
-			hasDeterministic = false;
-			//Work out sum of weights
-			cumulative = 0;
-			for(int i = 0; i < nUnits; i++)
-			{
-				if(!args.deterministicInclusion[i]) cumulative += weights[i];
-			}
-			mpfr_class maxAllowed = cumulative / mpfr_class(args.n - indices.size());
-			//Any weights that are too big are included with probability 1
-			for(int i = 0; i < nUnits; i++)
-			{
-				if(weights[i] >= maxAllowed && !args.deterministicInclusion[i])
-				{
-					args.deterministicInclusion[i] = true;
-					indices.push_back(i);
-					hasDeterministic = true;
-				}
-				else if(!args.deterministicInclusion[i] && weights[i] == 0)
-				{
-					args.deterministicInclusion[i] = true;
-				}
-			}
-			if(indices.size() > args.n)
-			{
-				throw std::runtime_error("Internal error");
-			}
 
-		} while(hasDeterministic);
-		int deterministicIndices = (int)indices.size();
-	
-		if(deterministicIndices == (int)args.n)
-		{
-			return;
-		}
+		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
+		int deterministicIndices = indices.size();
 
-		//Rescale the weights so that they sum to n
-		mpfr_class factor = mpfr_class(args.n - deterministicIndices)/ cumulative;
-		if(cumulative == 0)
-		{
-			throw std::runtime_error("Divide by zero encountered");
-		}
-		//And also work out the exponential parameters
-		copiedWeights.clear();
-		copiedWeights.resize(nUnits);
-		for(int i = 0; i < nUnits; i++)
-		{
-			if(!args.deterministicInclusion[i])
-			{
-				copiedWeights[i] = weights[i]*factor;
-			}
-			else copiedWeights[i] = 0;
-		}
 		boost::random::uniform_real_distribution<> standardUniform(0, 1);
 		//Now compute the pareto statistics
 		args.paretoStatistics.clear();
@@ -96,7 +29,7 @@ namespace sampling
 			{
 				double uniform = standardUniform(randomSource);
 				paretoSamplingArgs::paretoStatistic newStatistic;
-				mpfr_class value = (uniform * (1 - copiedWeights[i]))/(copiedWeights[i]*(1-uniform));
+				mpfr_class value = (uniform * (1 - rescaledWeights[i]))/(rescaledWeights[i]*(1-uniform));
 				newStatistic.statistic = value.convert_to<double>();
 				newStatistic.order = i;
 				args.paretoStatistics.push_back(newStatistic);
