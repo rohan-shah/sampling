@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
-#include "conditionalPoisson.h"
-BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic1, * boost::unit_test::tolerance(0.00001))
+#include "conditionalPoissonRejective.h"
+BOOST_AUTO_TEST_CASE(conditionalPossonRejectiveDeterministic1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic1, * boost::unit_test::tolera
 	args.n = 2;
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		std::sort(indices.begin(), indices.end());
 		BOOST_TEST((std::find(indices.begin(), indices.end(), 2) != indices.end()));
 		BOOST_TEST(!args.deterministicInclusion[0]);
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic1, * boost::unit_test::tolera
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)3);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic2, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPossonRejectiveDeterministic2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic2, * boost::unit_test::tolera
 	args.n = 3;
 	for(int i = 0; i < 10; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		BOOST_TEST(args.deterministicInclusion[0]);
 		BOOST_TEST(args.deterministicInclusion[1]);
 		BOOST_TEST(args.deterministicInclusion[2]);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic2, * boost::unit_test::tolera
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)3);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic3, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPossonRejectiveDeterministic3, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(conditionalPossonDeterministic3, * boost::unit_test::tolera
 	args.n = 8;
 	for(int i = 0; i < 10; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		for(int j = 3; j < 10; j++) 
 		{
 			BOOST_TEST(args.deterministicInclusion[j]);

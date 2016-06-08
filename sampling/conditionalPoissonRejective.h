@@ -40,7 +40,7 @@ namespace sampling
 		conditionalPoissonArgs(const conditionalPoissonArgs& other);
 		conditionalPoissonArgs& operator=(const conditionalPoissonArgs& other);
 	};
-	void conditionalPoisson(conditionalPoissonArgs& args, boost::mt19937& randomSource);
+	void conditionalPoissonRejective(conditionalPoissonArgs& args, boost::mt19937& randomSource);
 	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args);
 	void calculateExpNormalisingConstants(std::vector<mpfr_class>& expExponentialParameters, std::vector<mpfr_class>& exponentialParameters, boost::numeric::ublas::matrix<mpfr_class>& expNormalisingConstant, int n, int nUnits, std::vector<bool>& ignore);
 }

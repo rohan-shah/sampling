@@ -7,7 +7,7 @@ namespace sampling
 	using std::log;
 	using boost::multiprecision::exp;
 	using std::exp;
-	void conditionalPoisson(conditionalPoissonArgs& args, boost::mt19937& randomSource)
+	void conditionalPoissonRejective(conditionalPoissonArgs& args, boost::mt19937& randomSource)
 	{
 		std::vector<int>& indices = *args.indices;
 		std::vector<mpfr_class>& weights = *args.weights;

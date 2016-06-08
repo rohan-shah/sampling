@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
-#include "conditionalPoisson.h"
-BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeights1, * boost::unit_test::tolerance(0.00001))
+#include "conditionalPoissonRejective.h"
+BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeights1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeights1, * boost::unit_test::toleran
 	args.n = 1;
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		if(indices[0] == 0)
 		{
 			BOOST_TEST(inclusionProbabilities[0].convert_to<double>() == 1.0/5.0);
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeights1, * boost::unit_test::toleran
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)4);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeights2, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeights2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -70,8 +70,8 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeights2, * boost::unit_test::toleran
 	weights.push_back(0);
 
 	args.n = 1;
-	BOOST_CHECK_THROW(sampling::conditionalPoisson(args, randomSource), std::runtime_error);
+	BOOST_CHECK_THROW(sampling::conditionalPoissonRejective(args, randomSource), std::runtime_error);
 	args.n = 2;
-	BOOST_CHECK_THROW(sampling::conditionalPoisson(args, randomSource), std::runtime_error);
+	BOOST_CHECK_THROW(sampling::conditionalPoissonRejective(args, randomSource), std::runtime_error);
 }
 

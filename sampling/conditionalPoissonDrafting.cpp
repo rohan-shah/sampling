@@ -59,12 +59,12 @@ namespace sampling
 		std::vector<double> accumulated;
 		accumulated.reserve(nUnits);
 		boost::random::uniform_real_distribution<double> uniformDest;
-		for(int i = 0; i < args.n - deterministicIndices; i++)
+		for(int i = 0; i < (int)args.n - deterministicIndices; i++)
 		{
 			accumulated.clear();
 			mpfr_class sum = 0;
 			//Accumulate inclusion probabilities
-			for(int j = 0; j < remaining.size(); j++)
+			for(int j = 0; j < (int)remaining.size(); j++)
 			{
 				sum += args.inclusionProbabilities2[remaining[j]];
 				accumulated.push_back(sum.convert_to<double>());
@@ -72,7 +72,7 @@ namespace sampling
 			//Sample according to inclusion probabilities
 			double uniformSample = uniformDest(randomSource);
 			int selectedUnit = -1, selectedUnitInRemaining = -1;
-			for(int j = 0; j < accumulated.size(); j++)
+			for(int j = 0; j < (int)accumulated.size(); j++)
 			{
 				if(uniformSample <= accumulated[j])
 				{
@@ -86,7 +86,7 @@ namespace sampling
 			std::swap(remaining.back(), remaining[selectedUnitInRemaining]);
 			remaining.pop_back();
 			if(args.n - deterministicIndices - i - 1 == 0) throw std::runtime_error("Internal error");
-			for(int j = 0; j < remaining.size(); j++)
+			for(int j = 0; j < (int)remaining.size(); j++)
 			{
 				args.inclusionProbabilities3[remaining[j]] = (args.expExponentialParameters[selectedUnit] * args.inclusionProbabilities2[remaining[j]] - args.expExponentialParameters[remaining[j]] * args.inclusionProbabilities2[selectedUnit]) / ((args.n - deterministicIndices - i - 1) * (args.expExponentialParameters[selectedUnit] - args.expExponentialParameters[remaining[j]]) * args.inclusionProbabilities2[selectedUnit]);
 			}

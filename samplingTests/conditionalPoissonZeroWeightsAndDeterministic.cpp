@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
-#include "conditionalPoisson.h"
-BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeightsAndDeterministic1, * boost::unit_test::tolerance(0.00001))
+#include "conditionalPoissonRejective.h"
+BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeightsAndDeterministic1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeightsAndDeterministic1, * boost::un
 	args.n = 2;
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		std::sort(indices.begin(), indices.end());
 		BOOST_TEST(indices.size() == (std::size_t)2);
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)4);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeightsAndDeterministic1, * boost::un
 		}
 	}	
 }
-BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeightsAndDeterministic2, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeightsAndDeterministic2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonZeroWeightsAndDeterministic2, * boost::un
 	args.n = 2;
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		std::sort(indices.begin(), indices.end());
 		BOOST_TEST(indices.size() == (std::size_t)2);
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)4);

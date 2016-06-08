@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "conditionalPoissonRejective.h"
-BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveSimple1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.
 	args.n = 1;
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		if(indices[0] == 0)
 		{
 			BOOST_TEST(inclusionProbabilities[0].convert_to<double>() == 1.0/5.0);
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.
 		BOOST_TEST(inclusionProbabilities.size() == (std::size_t)2);
 	}
 }
-BOOST_AUTO_TEST_CASE(conditionalPoissonSimple2, * boost::unit_test::tolerance(0.00001))
+BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveSimple2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;
 	std::vector<int> indices;
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSimple2, * boost::unit_test::tolerance(0.
 	double inclusion3 = (3.0*2.0*5.0 / (6.0*6.0*6.0)) + (3.0*4.0*5.0 / (6.0*6.0*6.0));
 	for(int i = 0; i < 100; i++)
 	{
-		sampling::conditionalPoisson(args, randomSource);
+		sampling::conditionalPoissonRejective(args, randomSource);
 		std::sort(indices.begin(), indices.end());
 		if(indices[0] == 0 && indices[1] == 1)
 		{
