@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "conditionalPoisson.h"
+#include "conditionalPoissonRejective.h"
 BOOST_AUTO_TEST_CASE(conditionalPoissonSimple1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonArgs args;

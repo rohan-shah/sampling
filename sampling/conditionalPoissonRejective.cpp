@@ -1,4 +1,4 @@
-#include "conditionalPoisson.h"
+#include "conditionalPoissonRejective.h"
 #include <boost/random/bernoulli_distribution.hpp>
 #include "samplingBase.h"
 namespace sampling

@@ -1,5 +1,5 @@
-#ifndef CONDITIONAL_POISSON_HEADER_GUARD
-#define CONDITIONAL_POISSON_HEADER_GUARD
+#ifndef CONDITIONAL_POISSON_REJECTIVE_HEADER_GUARD
+#define CONDITIONAL_POISSON_REJECTIVE_HEADER_GUARD
 #include <vector>
 #include "includeMPFRSampling.h"
 #include <boost/random/mersenne_twister.hpp>
