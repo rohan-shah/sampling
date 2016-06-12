@@ -7,7 +7,7 @@ namespace sampling
 	using std::log;
 	using boost::multiprecision::exp;
 	using std::exp;
-	void conditionalPoissonRejective(conditionalPoissonArgs& args, boost::mt19937& randomSource)
+	void conditionalPoissonRejective(conditionalPoissonRejectiveArgs& args, boost::mt19937& randomSource)
 	{
 		std::vector<int>& indices = *args.indices;
 		std::vector<mpfr_class>& weights = *args.weights;
@@ -37,6 +37,6 @@ beginSample:
 		{
 			throw std::runtime_error("Internal error");
 		}
-		if(args.calculateInclusionProbabilities) conditionalPoissonInclusionProbabilities(args);
+		if(args.calculateInclusionProbabilities) conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
 	}
 }

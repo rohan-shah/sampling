@@ -9,6 +9,7 @@ namespace sampling
 {
 	struct conditionalPoissonDraftingArgs : public conditionalPoissonArgs
 	{
+		std::vector<mpfr_class>* inclusionProbabilities;
 		//This extra member is needed for recomputing the drafting probabilities after a unit is selected. 
 		std::vector<mpfr_class> inclusionProbabilities2, inclusionProbabilities3;
 	};

@@ -18,35 +18,9 @@ namespace sampling
 
 		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
 		int deterministicIndices = indices.size();
+		computeExponentialParameters(args);
 
-		args.exponentialParameters.resize(nUnits);
-		args.expExponentialParameters.resize(nUnits);
-		mpfr_class sumExponentialParameters = 0;
-		for(int i = 0; i < nUnits; i++)
-		{
-			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
-			{
-				args.expExponentialParameters[i] = rescaledWeights[i] / (1 - rescaledWeights[i]);
-				args.exponentialParameters[i] = log(args.expExponentialParameters[i]);
-				sumExponentialParameters += args.exponentialParameters[i];
-			}
-			else
-			{
-				args.expExponentialParameters[i] = 0;
-				args.exponentialParameters[i] = 0;
-			}
-		}
-		//Rescale so the exponential parameters sum no zero
-		mpfr_class toSubtract = sumExponentialParameters / nUnits;
-		for(int i = 0; i < nUnits; i++)
-		{
-			if(!args.deterministicInclusion[i])
-			{
-				args.exponentialParameters[i] -= toSubtract;
-				args.expExponentialParameters[i] = exp(args.exponentialParameters[i]);
-			}
-		}
-		conditionalPoissonInclusionProbabilities(args);
+		conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
 		args.inclusionProbabilities2.clear();
 		args.inclusionProbabilities2.insert(args.inclusionProbabilities2.begin(), inclusionProbabilities.begin(), inclusionProbabilities.end());
 		//They have to be rescaled first

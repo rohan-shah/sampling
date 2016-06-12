@@ -6,6 +6,16 @@
 #include "conditionalPoissonBase.h"
 namespace sampling
 {
-	void conditionalPoissonRejective(conditionalPoissonArgs& args, boost::mt19937& randomSource);
+	struct conditionalPoissonRejectiveArgs : public conditionalPoissonArgs
+	{
+	public:
+		conditionalPoissonRejectiveArgs(bool calculateInclusionProbabilities)
+			: calculateInclusionProbabilities(calculateInclusionProbabilities), inclusionProbabilities(NULL)
+		{}
+		//Should we calculate the inclusion probabilities? They're expensive. 
+		bool calculateInclusionProbabilities;
+		std::vector<mpfr_class>* inclusionProbabilities;
+	};
+	void conditionalPoissonRejective(conditionalPoissonRejectiveArgs& args, boost::mt19937& randomSource);
 }
 #endif

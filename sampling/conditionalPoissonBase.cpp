@@ -1,9 +1,8 @@
 #include "conditionalPoissonBase.h"
 namespace sampling
 {
-	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args)
+	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities)
 	{
-		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
 		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
 		std::vector<bool>& ignore = args.ignore;
 		int nUnits = (int)rescaledWeights.size();

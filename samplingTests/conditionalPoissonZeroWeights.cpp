@@ -2,7 +2,7 @@
 #include "conditionalPoissonRejective.h"
 BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeights1, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonArgs args;
+	sampling::conditionalPoissonRejectiveArgs args(true);
 	std::vector<int> indices;
 	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
 	args.indices = &indices;
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeights1, * boost::unit_test
 }
 BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeights2, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonArgs args;
+	sampling::conditionalPoissonRejectiveArgs args(true);
 	std::vector<int> indices;
 	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
 	args.indices = &indices;
