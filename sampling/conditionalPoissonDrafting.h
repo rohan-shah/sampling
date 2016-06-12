@@ -4,7 +4,7 @@
 #include "includeMPFRSampling.h"
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include "conditionalPoissonRejective.h"
+#include "conditionalPoissonBase.h"
 namespace sampling
 {
 	struct conditionalPoissonDraftingArgs : public conditionalPoissonArgs
