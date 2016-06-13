@@ -3,7 +3,7 @@ namespace sampling
 {
 	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities)
 	{
-		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
 		std::vector<bool>& ignore = args.ignore;
 		int nUnits = (int)rescaledWeights.size();
 		int deterministicIndices = 0, ignoreIndices = 0;
@@ -89,8 +89,8 @@ namespace sampling
 	}
 	void computeExponentialParameters(conditionalPoissonArgs& args)
 	{
-		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
-		std::vector<mpfr_class>& weights = *args.weights;
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
+		std::vector<mpfr_class>& weights = args.weights;
 		int nUnits = (int)weights.size();
 
 		args.exponentialParameters.resize(nUnits);

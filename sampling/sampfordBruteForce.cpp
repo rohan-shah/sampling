@@ -5,9 +5,9 @@ namespace sampling
 {
 	void sampfordMultinomialRejective(sampfordMultinomialRejectiveArgs& args, boost::mt19937& randomSource)
 	{
-		std::vector<int>& indices = *args.indices;
-		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
-		std::vector<mpfr_class>& weights = *args.weights;
+		std::vector<int>& indices = args.indices;
+		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+		std::vector<mpfr_class>& weights = args.weights;
 		int nUnits = (int)weights.size();
 		if((int)args.n > nUnits)
 		{

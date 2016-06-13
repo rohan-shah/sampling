@@ -11,10 +11,10 @@ namespace sampling
 	using std::exp;
 	void pareto(paretoSamplingArgs& args, boost::mt19937& randomSource)
 	{
-		std::vector<int>& indices = *args.indices;
-		std::vector<mpfr_class>& weights = *args.weights;
-		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
-		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
+		std::vector<int>& indices = args.indices;
+		std::vector<mpfr_class>& weights = args.weights;
+		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
 		int nUnits = (int)weights.size();
 
 		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
@@ -40,11 +40,6 @@ namespace sampling
 		for(int i = 0; i < (int)(args.n - deterministicIndices); i++)
 		{
 			indices.push_back(args.paretoStatistics[i].order);
-		}
-		
-		if(args.calculateInclusionProbabilities)
-		{
-			throw std::runtime_error("Calculation of Pareto inclusion probabilities not implemented yet");
 		}
 	}
 }

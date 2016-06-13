@@ -3,13 +3,9 @@
 BOOST_AUTO_TEST_CASE(conditionalPoissonSequential1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonSequentialArgs args;
-	std::vector<int> indices;
-	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
-	args.indices = &indices;
-	args.inclusionProbabilities = &inclusionProbabilities;
-	args.weights = &weights;
-	args.rescaledWeights = &rescaledWeights;
-
+	std::vector<int>& indices = args.indices;
+	std::vector<sampling::mpfr_class>& weights = args.weights;
+	
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
 
@@ -33,13 +29,9 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSequential1, * boost::unit_test::toleranc
 BOOST_AUTO_TEST_CASE(conditionalPoissonSequential2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonSequentialArgs args;
-	std::vector<int> indices;
-	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
-	args.indices = &indices;
-	args.inclusionProbabilities = &inclusionProbabilities;
-	args.weights = &weights;
-	args.rescaledWeights = &rescaledWeights;
-
+	std::vector<int>& indices = args.indices;
+	std::vector<sampling::mpfr_class>& weights = args.weights;
+	
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
 

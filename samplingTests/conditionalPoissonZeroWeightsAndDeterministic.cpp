@@ -3,13 +3,10 @@
 BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeightsAndDeterministic1, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonRejectiveArgs args(true);
-	std::vector<int> indices;
-	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
-	args.indices = &indices;
-	args.inclusionProbabilities = &inclusionProbabilities;
-	args.weights = &weights;
-	args.rescaledWeights = &rescaledWeights;
-	args.calculateInclusionProbabilities = true;
+	std::vector<int>& indices = args.indices;
+	std::vector<sampling::mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+	std::vector<sampling::mpfr_class>& weights = args.weights;
+	std::vector<sampling::mpfr_class>& rescaledWeights = args.rescaledWeights;
 
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
@@ -49,14 +46,11 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeightsAndDeterministic1, * 
 BOOST_AUTO_TEST_CASE(conditionalPoissonRejectiveZeroWeightsAndDeterministic2, * boost::unit_test::tolerance(0.00001))
 {
 	sampling::conditionalPoissonRejectiveArgs args(true);
-	std::vector<int> indices;
-	std::vector<sampling::mpfr_class> inclusionProbabilities, weights, rescaledWeights;
-	args.indices = &indices;
-	args.inclusionProbabilities = &inclusionProbabilities;
-	args.weights = &weights;
-	args.rescaledWeights = &rescaledWeights;
-	args.calculateInclusionProbabilities = true;
-
+	std::vector<int>& indices = args.indices;
+	std::vector<sampling::mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+	std::vector<sampling::mpfr_class>& weights = args.weights;
+	std::vector<sampling::mpfr_class>& rescaledWeights = args.rescaledWeights;
+	
 	boost::mt19937 randomSource;
 	randomSource.seed(1);
 

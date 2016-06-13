@@ -9,10 +9,10 @@ namespace sampling
 	using std::exp;
 	void conditionalPoissonSequential(conditionalPoissonSequentialArgs& args, boost::mt19937& randomSource)
 	{
-		std::vector<int>& indices = *args.indices;
-		std::vector<mpfr_class>& weights = *args.weights;
-		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
-		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
+		std::vector<int>& indices = args.indices;
+		std::vector<mpfr_class>& weights = args.weights;
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
+		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
 		int nUnits = (int)weights.size();
 		indices.clear();
 

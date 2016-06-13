@@ -10,15 +10,14 @@ namespace sampling
 	{
 	public:
 		conditionalPoissonArgs()
-			: indices(NULL), weights(NULL), rescaledWeights(NULL)
 		{}
 		//The vector of selected units
-		std::vector<int>* indices;
+		std::vector<int> indices;
 		//The inclusion probabilities. Contains nUnits entries, but only the ones corresponding to selected units are actually set.
 		//The input size variables for the sampling
-		std::vector<mpfr_class>* weights;
+		std::vector<mpfr_class> weights;
 		//A copy of the sampling weights made after deterministically selected units are removed, and then the sizes are rescaled.
-		std::vector<mpfr_class>* rescaledWeights;
+		std::vector<mpfr_class> rescaledWeights;
 		//Number of units to select
 		std::size_t n;
 		//Vector indicating which units were deterministically selected

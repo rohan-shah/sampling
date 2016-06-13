@@ -10,11 +10,11 @@ namespace sampling
 	{
 	public:
 		conditionalPoissonRejectiveArgs(bool calculateInclusionProbabilities)
-			: calculateInclusionProbabilities(calculateInclusionProbabilities), inclusionProbabilities(NULL)
+			: calculateInclusionProbabilities(calculateInclusionProbabilities)
 		{}
 		//Should we calculate the inclusion probabilities? They're expensive. 
 		bool calculateInclusionProbabilities;
-		std::vector<mpfr_class>* inclusionProbabilities;
+		std::vector<mpfr_class> inclusionProbabilities;
 	};
 	void conditionalPoissonRejective(conditionalPoissonRejectiveArgs& args, boost::mt19937& randomSource);
 }

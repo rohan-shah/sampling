@@ -10,10 +10,10 @@ namespace sampling
 	using std::exp;
 	void conditionalPoissonDrafting(conditionalPoissonDraftingArgs& args, boost::mt19937& randomSource)
 	{
-		std::vector<int>& indices = *args.indices;
-		std::vector<mpfr_class>& weights = *args.weights;
-		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
-		std::vector<mpfr_class>& rescaledWeights = *args.rescaledWeights;
+		std::vector<int>& indices = args.indices;
+		std::vector<mpfr_class>& weights = args.weights;
+		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
 		int nUnits = (int)weights.size();
 
 		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;

@@ -11,23 +11,25 @@ namespace sampling
 	using std::exp;
 	void sampfordFromParetoNaive(sampfordFromParetoNaiveArgs& args, boost::mt19937& randomSource)
 	{
-		std::vector<mpfr_class>& weights = *args.weights;
-		int nUnits = weights.size();
 		args.paretoArgs.n = args.n;
-		args.paretoArgs.calculateInclusionProbabilities = false;
-		args.paretoArgs.inclusionProbabilities = args.inclusionProbabilities;
-		args.paretoArgs.weights = args.weights;
-		args.paretoArgs.rescaledWeights = args.rescaledWeights;
-		args.paretoArgs.indices = args.indices;
+		std::swap(args.paretoArgs.weights, args.weights);
 
 		pareto(args.paretoArgs, randomSource);
 
-		std::vector<mpfr_class>& inclusionProbabilities = *args.inclusionProbabilities;
-		std::vector<mpfr_class>& rescaledWeights= *args.rescaledWeights;
+		std::swap(args.paretoArgs.weights, args.weights);
+		std::swap(args.paretoArgs.rescaledWeights, args.rescaledWeights);
+		std::swap(args.paretoArgs.indices, args.indices);
+		std::swap(args.paretoArgs.deterministicInclusion, args.deterministicInclusion);
+		std::swap(args.paretoArgs.zeroWeights, args.zeroWeights);
+
+		std::vector<mpfr_class>& weights = args.weights;
+		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
+		int nUnits = weights.size();
 		inclusionProbabilities.resize(nUnits);
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(!args.paretoArgs.deterministicInclusion[i])
+			if(!args.deterministicInclusion[i])
 			{
 				inclusionProbabilities[i] = rescaledWeights[i];
 			}
