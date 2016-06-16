@@ -6,7 +6,11 @@ namespace sampling
 {
 	struct conditionalPoissonSequentialArgs : public conditionalPoissonArgs
 	{
+	public:
+		conditionalPoissonSequentialArgs(bool calculateInclusionProbabilities)
+		{}
 		std::vector<mpfr_class> inclusionProbabilities;
+		bool calculateInclusionProbabilities;
 	};
 	void conditionalPoissonSequential(conditionalPoissonSequentialArgs& args, boost::mt19937& randomSource);
 }

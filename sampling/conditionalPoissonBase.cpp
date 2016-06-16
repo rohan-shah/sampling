@@ -1,6 +1,22 @@
 #include "conditionalPoissonBase.h"
 namespace sampling
 {
+	void calculateExpNormalisingConstants(conditionalPoissonArgs& args)
+	{
+		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
+		std::vector<bool>& ignore = args.ignore;
+		int nUnits = (int)rescaledWeights.size();
+		int deterministicIndices = 0, ignoreIndices = 0;
+		ignore.resize(nUnits);
+		for(int i = 0; i < nUnits; i++)
+		{
+			ignore[i] = args.deterministicInclusion[i] || args.zeroWeights[i];
+			if(args.deterministicInclusion[i]) deterministicIndices++;
+			if(ignore[i]) ignoreIndices++;
+		}
+		//Now compute the inclusion probabilities
+		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n - deterministicIndices, nUnits - ignoreIndices, args.ignore);
+	}
 	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities)
 	{
 		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
@@ -17,6 +33,7 @@ namespace sampling
 		//Now compute the inclusion probabilities
 		inclusionProbabilities.resize(nUnits);
 		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n - deterministicIndices, nUnits - ignoreIndices, args.ignore);
+		if((int)args.n == deterministicIndices) return;
 		mpfr_class expNormalisingConstant = args.expNormalisingConstant(0, args.n - deterministicIndices - 1);
 		for(int unitCounter = 0; unitCounter < nUnits; unitCounter++)
 		{
@@ -69,6 +86,9 @@ namespace sampling
 						if(!ignore[unitIndex2-1]) sum += expExponentialParameters[unitIndex2-1];
 					}
 					expNormalisingConstant(unitIndex-1, z-1) = sum;
+#ifndef NDEBUG
+					assert(expNormalisingConstant(unitIndex-1, z-1) == expNormalisingConstant(unitIndex-1, z-1));
+#endif
 				}
 				else if(z == nUnits - unitIndex + 1)
 				{
@@ -78,10 +98,16 @@ namespace sampling
 						if(!ignore[unitIndex2-1]) sum += exponentialParameters[unitIndex2-1];
 					}
 					expNormalisingConstant(unitIndex-1, z-1) = exp(sum);
+#ifndef NDEBUG
+					assert(expNormalisingConstant(unitIndex-1, z-1) == expNormalisingConstant(unitIndex-1, z-1));
+#endif
 				}
 				else
 				{
 					expNormalisingConstant(unitIndex-1, z-1) = expExponentialParameters[k-1] * expNormalisingConstant(unitIndex, z-2) + expNormalisingConstant(unitIndex, z-1);
+#ifndef NDEBUG
+					assert(expNormalisingConstant(unitIndex-1, z-1) == expNormalisingConstant(unitIndex-1, z-1));
+#endif
 				}
 			}
 			k--;
@@ -96,6 +122,7 @@ namespace sampling
 		args.exponentialParameters.resize(nUnits);
 		args.expExponentialParameters.resize(nUnits);
 		mpfr_class sumExponentialParameters = 0;
+		int excluded = 0;
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
@@ -106,15 +133,16 @@ namespace sampling
 			}
 			else
 			{
+				excluded++;
 				args.expExponentialParameters[i] = 0;
 				args.exponentialParameters[i] = 0;
 			}
 		}
 		//Rescale so the exponential parameters sum no zero
-		mpfr_class toSubtract = sumExponentialParameters / nUnits;
+		mpfr_class toSubtract = sumExponentialParameters / (nUnits - excluded);
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(!args.deterministicInclusion[i])
+			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
 			{
 				args.exponentialParameters[i] -= toSubtract;
 				args.expExponentialParameters[i] = exp(args.exponentialParameters[i]);

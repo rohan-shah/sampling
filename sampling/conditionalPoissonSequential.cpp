@@ -19,8 +19,10 @@ namespace sampling
 		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
 		int deterministicIndices = indices.size();
 		computeExponentialParameters(args);
-		conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
+		if(args.calculateInclusionProbabilities) conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
+		else calculateExpNormalisingConstants(args);
 		int chosen = 0;
+		int skipped = 0;
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
@@ -28,12 +30,15 @@ namespace sampling
 				double parameter;
 				if(args.n - deterministicIndices - 1 - chosen == 0)
 				{
-					parameter = (args.expExponentialParameters[i] / args.expNormalisingConstant(i, args.n - deterministicIndices - chosen - 1)).convert_to<double>();
+					parameter = (args.expExponentialParameters[i] / args.expNormalisingConstant(i-skipped, args.n - deterministicIndices - chosen - 1)).convert_to<double>();
 				}
 				else
 				{
-					parameter = (args.expExponentialParameters[i] * args.expNormalisingConstant(i+1, args.n - deterministicIndices - 1 - chosen - 1) / args.expNormalisingConstant(i, args.n - deterministicIndices - chosen - 1)).convert_to<double>();
+					parameter = (args.expExponentialParameters[i] * args.expNormalisingConstant(i+1-skipped, args.n - deterministicIndices - 1 - chosen - 1) / args.expNormalisingConstant(i-skipped, args.n - deterministicIndices - chosen - 1)).convert_to<double>();
 				}
+#ifndef NDEBUG
+				if(parameter > 1) throw std::runtime_error("Internal error");
+#endif
 				boost::random::bernoulli_distribution<> bernoulli(parameter);
 				if(bernoulli(randomSource))
 				{
@@ -41,6 +46,7 @@ namespace sampling
 					chosen++;
 				}
 			}
+			else skipped++;
 			if(chosen == (int)args.n - deterministicIndices) break;
 		}
 	}

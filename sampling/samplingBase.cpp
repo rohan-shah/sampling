@@ -62,7 +62,7 @@ namespace sampling
 			//Any weights that are too big are included with probability 1
 			for(int i = 0; i < nUnits; i++)
 			{
-				if(weights[i] >= maxAllowed && !deterministicInclusion[i])
+				if(weights[i].convert_to<double>() >= maxAllowed.convert_to<double>() && !deterministicInclusion[i])
 				{
 					deterministicInclusion[i] = true;
 					indices.push_back(i);
