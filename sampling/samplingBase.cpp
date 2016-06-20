@@ -1,51 +1,96 @@
 #include "samplingBase.h"
 namespace sampling
 {
-	bool samplingBase(int n, std::vector<int>& indices, std::vector<mpfr_class>& weights, std::vector<mpfr_class>& rescaledWeights, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion, std::vector<mpfr_class>& inclusionProbabilities)
+	void samplingBase(int n, std::vector<int>& indices, std::vector<mpfr_class>& weights, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion, int& nDeterministic, int& nZeroWeights)
+	{
+		indices.clear();
+		int nUnits = (int)weights.size();
+
+		//Work out which units have weights zero on one
+		nZeroWeights = 0;
+		nDeterministic = 0;
+		zeroWeights.resize(nUnits);
+		deterministicInclusion.resize(nUnits);
+		std::fill(zeroWeights.begin(), zeroWeights.end(), false);
+		std::fill(deterministicInclusion.begin(), deterministicInclusion.end(), false);
+		for(int i = 0; i < nUnits; i++)
+		{
+			if(weights[i] > 1 || weights[i] < 0) throw std::runtime_error("Weights must be between 0 and 1"); 
+			if(weights[i] == 0)
+			{
+				nZeroWeights++;
+				zeroWeights[i] = true;
+			}
+			else if(weights[i] == 1)
+			{
+				nDeterministic++;
+				deterministicInclusion[i] = true;
+				indices.push_back(i);
+			}
+		}
+		if(n > nUnits - nZeroWeights)
+		{
+			throw std::runtime_error("Cannot select more units than there are units with non-zero weights");
+		}
+		else if(nDeterministic > n)
+		{
+			throw std::runtime_error("Cannot select fewer units than there are units with weight 1");
+		}
+		if(n == nUnits - nZeroWeights)
+		{
+			nDeterministic = n;
+			for(int i = 0; i < nUnits; i++)
+			{
+				if(!zeroWeights[i] && !deterministicInclusion[i])
+				{
+					deterministicInclusion[i] = true;
+					indices.push_back(i);
+				}
+			}
+			return;
+		}
+	}
+	void sampfordBase(int n, std::vector<int>& indices, std::vector<mpfr_class>& weights, std::vector<mpfr_class>& rescaledWeights, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion, int& nDeterministic, int& nZeroWeights)
 	{
 		indices.clear();
 		int nUnits = (int)weights.size();
 		rescaledWeights.resize(nUnits);
-		inclusionProbabilities.resize(nUnits);
 
-		//Work out which units have zero weights
-		int nZeros = 0;
+		//Work out which units have zero weights or deterministic inclusion
+		nZeroWeights = 0;
+		nDeterministic = 0;
 		zeroWeights.resize(nUnits);
+		deterministicInclusion.resize(nUnits);
 		std::fill(zeroWeights.begin(), zeroWeights.end(), false);
+		std::fill(deterministicInclusion.begin(), deterministicInclusion.end(), false);
 		for(int i = 0; i < nUnits; i++)
 		{
+			if(weights[i] > 1 || weights[i] < 0) throw std::runtime_error("Weights must be between 0 and 1"); 
 			if(weights[i] == 0)
 			{
-				nZeros++;
+				nZeroWeights++;
 				zeroWeights[i] = true;
-				inclusionProbabilities[i] = rescaledWeights[i] = 0;
 			}
 		}
-		deterministicInclusion.resize(nUnits);
-		if(n > nUnits - nZeros)
+		if(n > nUnits - nZeroWeights)
 		{
-			throw std::runtime_error("Input n was too big, or too many units had zero weights");
+			throw std::runtime_error("Cannot select more units than there are units with non-zero weights");
 		}
-		else if(n == nUnits - nZeros)
+		if(n == nUnits - nZeroWeights)
 		{
-			indices.reserve(nUnits);
 			for(int i = 0; i < nUnits; i++)
 			{
-				if(!zeroWeights[i])
+				if(deterministicInclusion[i])
 				{
-					rescaledWeights[i] = inclusionProbabilities[i] = 1;
-					deterministicInclusion[i] = true;
-					indices.push_back(i);
+					rescaledWeights[i] = 1;
 				}
-				else
+				else if(zeroWeights[i])
 				{
-					rescaledWeights[i] = inclusionProbabilities[i] = 0;
-					deterministicInclusion[i] = false;
+					rescaledWeights[i] = 0;
 				}
 			}
-			return true;
+			return;
 		}
-		std::fill(deterministicInclusion.begin(), deterministicInclusion.end(), false);
 		//Work out which units are going to be deterministically selected. 
 		mpfr_class cumulative;
 		bool hasDeterministic = false;
@@ -67,15 +112,19 @@ namespace sampling
 					deterministicInclusion[i] = true;
 					indices.push_back(i);
 					hasDeterministic = true;
-					inclusionProbabilities[i] = 1;
+					nDeterministic++;
 				}
 		}
 		} while(hasDeterministic);
-		int deterministicIndices = (int)indices.size();
-
-		if(deterministicIndices == (int)n)
+		
+		if(nDeterministic > n)
 		{
-			if(deterministicIndices + nZeros != nUnits)
+			throw std::runtime_error("Cannot select fewer units than there are units with weight 1");
+		}
+
+		if(nDeterministic == (int)n)
+		{
+			if(nDeterministic + nZeroWeights != nUnits)
 			{
 				throw std::runtime_error("There were units with probability zero of selection but non-zero weights");
 			}
@@ -83,19 +132,19 @@ namespace sampling
 			{
 				if(deterministicInclusion[i])
 				{
-					inclusionProbabilities[i] = rescaledWeights[i] = 1;
+					rescaledWeights[i] = 1;
 				}
 				else
 				{
 					if(!zeroWeights[i]) throw std::runtime_error("Internal error");
-					inclusionProbabilities[i] = rescaledWeights[i] = 0;
+					rescaledWeights[i] = 0;
 				}
 			}
-			return true;
+			return;
 		}
 
 		//Rescale the weights so that they sum to n
-		mpfr_class factor = mpfr_class(n - deterministicIndices)/ cumulative;
+		mpfr_class factor = mpfr_class(n - nDeterministic)/ cumulative;
 		if(cumulative == 0)
 		{
 			throw std::runtime_error("Divide by zero encountered");
@@ -113,7 +162,6 @@ namespace sampling
 			}
 			else rescaledWeights[i] = weights[i]*factor;
 		}
-		return false;
 	}
 }
 

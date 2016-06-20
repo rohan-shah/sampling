@@ -13,23 +13,22 @@ namespace sampling
 	{
 		std::vector<int>& indices = args.indices;
 		std::vector<mpfr_class>& weights = args.weights;
-		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
-		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
 		int nUnits = (int)weights.size();
 
-		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
-		int deterministicIndices = indices.size();
+		int nZeroWeights = 0, nDeterministic = 0;
+		samplingBase(args.n, indices, weights, args.zeroWeights, args.deterministicInclusion, nDeterministic, nZeroWeights);
+		if(nDeterministic == (int)args.n) return;
 
 		boost::random::uniform_real_distribution<> standardUniform(0, 1);
 		//Now compute the pareto statistics
 		args.paretoStatistics.clear();
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(!args.deterministicInclusion[i])
+			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
 			{
 				double uniform = standardUniform(randomSource);
 				paretoSamplingArgs::paretoStatistic newStatistic;
-				mpfr_class value = (uniform * (1 - rescaledWeights[i]))/(rescaledWeights[i]*(1-uniform));
+				mpfr_class value = (uniform * (1 - weights[i]))/(weights[i]*(1-uniform));
 				newStatistic.statistic = value.convert_to<double>();
 				newStatistic.order = i;
 				args.paretoStatistics.push_back(newStatistic);
@@ -37,7 +36,7 @@ namespace sampling
 		}
 		std::sort(args.paretoStatistics.begin(), args.paretoStatistics.end());
 		//Select so many smallest values
-		for(int i = 0; i < (int)(args.n - deterministicIndices); i++)
+		for(int i = 0; i < (int)(args.n - nDeterministic); i++)
 		{
 			indices.push_back(args.paretoStatistics[i].order);
 		}

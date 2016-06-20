@@ -11,30 +11,35 @@ namespace sampling
 	{
 		std::vector<int>& indices = args.indices;
 		std::vector<mpfr_class>& weights = args.weights;
-		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
 		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
+		std::vector<bool>& zeroWeights = args.zeroWeights;
+		std::vector<bool>& deterministicInclusion = args.deterministicInclusion;
 		int nUnits = (int)weights.size();
 		indices.clear();
 
-		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
-		int deterministicIndices = indices.size();
+		int nZeroWeights = 0, nDeterministic = 0;
+		samplingBase(args.n, indices, weights, zeroWeights, deterministicInclusion, nDeterministic, nZeroWeights);
+
 		computeExponentialParameters(args);
-		if(args.calculateInclusionProbabilities) conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
+		if(args.calculateInclusionProbabilities)
+		{
+			conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
+		}
 		else calculateExpNormalisingConstants(args);
 		int chosen = 0;
 		int skipped = 0;
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
+			if(!args.zeroWeights[i] && !args.deterministicInclusion[i])
 			{
 				double parameter;
-				if(args.n - deterministicIndices - 1 - chosen == 0)
+				if(args.n - nDeterministic - 1 - chosen == 0)
 				{
-					parameter = (args.expExponentialParameters[i] / args.expNormalisingConstant(i-skipped, args.n - deterministicIndices - chosen - 1)).convert_to<double>();
+					parameter = (args.expExponentialParameters[i] / args.expNormalisingConstant(i-skipped, args.n - nDeterministic - chosen - 1)).convert_to<double>();
 				}
 				else
 				{
-					parameter = (args.expExponentialParameters[i] * args.expNormalisingConstant(i+1-skipped, args.n - deterministicIndices - 1 - chosen - 1) / args.expNormalisingConstant(i-skipped, args.n - deterministicIndices - chosen - 1)).convert_to<double>();
+					parameter = (args.expExponentialParameters[i] * args.expNormalisingConstant(i+1-skipped, args.n - nDeterministic - 1 - chosen - 1) / args.expNormalisingConstant(i-skipped, args.n - nDeterministic - chosen - 1)).convert_to<double>();
 				}
 #ifndef NDEBUG
 				if(parameter > 1) throw std::runtime_error("Internal error");
@@ -47,7 +52,7 @@ namespace sampling
 				}
 			}
 			else skipped++;
-			if(chosen == (int)args.n - deterministicIndices) break;
+			if(chosen == (int)args.n - nDeterministic) break;
 		}
 	}
 }

@@ -15,8 +15,6 @@ namespace sampling
 		std::vector<mpfr_class> rescaledWeights;
 		//The size variables for the sampling
 		std::vector<mpfr_class> weights;
-		//Inclusion probabilities. Contains nUnits values, but only the values for the chosen units are set. 
-		std::vector<mpfr_class> inclusionProbabilities;
 		//Indices of selected units
 		std::vector<int> indices;
 		//Number of units to sample
@@ -24,8 +22,8 @@ namespace sampling
 		//Working memory
 		std::vector<double> accumulated1;
 		std::vector<double> accumulated2;
-		std::vector<bool> deterministicInclusion;
-		std::vector<int> deterministicIndices;
+		std::vector<int> indices1;
+		std::vector<bool> deterministicInclusion, zeroWeights;
 	};
 	void sampfordMultinomialRejective(sampfordMultinomialRejectiveArgs& args, boost::mt19937& randomSource);
 	struct sampfordConditionalPoissonRejectiveArgs
@@ -34,10 +32,12 @@ namespace sampling
 		sampfordConditionalPoissonRejectiveArgs()
 		{}
 		std::size_t n;
-		std::vector<bool> deterministicInclusion;
+		std::vector<int> indices, indices1;
+		std::vector<mpfr_class> weights, rescaledWeights;
+		std::vector<bool> deterministicInclusion, zeroWeights;
 		std::vector<double> accumulated;
 	};
-	void sampfordConditionalPoissonRejective(sampfordConditionalPoissonRejectiveArgs& args, std::vector<int>& indices, std::vector<mpfr_class>& inclusionProbabilities, std::vector<mpfr_class>& weights, boost::mt19937& randomSource);
+	void sampfordConditionalPoissonRejective(sampfordConditionalPoissonRejectiveArgs& args, boost::mt19937& randomSource);
 	struct sampfordFromParetoNaiveArgs
 	{
 	public:
@@ -47,7 +47,6 @@ namespace sampling
 		std::size_t n;
 		std::vector<mpfr_class> weights;
 		std::vector<mpfr_class> rescaledWeights;
-		std::vector<mpfr_class> inclusionProbabilities;
 		std::vector<int> indices;
 		std::vector<bool> deterministicInclusion;
 		std::vector<bool> zeroWeights;

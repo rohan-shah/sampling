@@ -13,30 +13,33 @@ namespace sampling
 		std::vector<int>& indices = args.indices;
 		std::vector<mpfr_class>& weights = args.weights;
 		std::vector<mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
-		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
+		std::vector<bool>& zeroWeights = args.zeroWeights;
+		std::vector<bool>& deterministicInclusion = args.deterministicInclusion;
 		int nUnits = (int)weights.size();
+		indices.clear();
+		int nZeroWeights = 0, nDeterministic = 0;
+		samplingBase(args.n, indices, weights, zeroWeights, deterministicInclusion, nDeterministic, nZeroWeights);
 
-		if(samplingBase(args.n, indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, inclusionProbabilities)) return;
-		int deterministicIndices = indices.size();
+		std::vector<int> remaining;
+		remaining.reserve(nUnits);
+		for(int i = 0; i < (int)weights.size(); i++)
+		{
+			mpfr_class& weight = weights[i];
+			if(weight != 1 && weight != 0) remaining.push_back(i);
+		}
 		computeExponentialParameters(args);
 
 		conditionalPoissonInclusionProbabilities(args, inclusionProbabilities);
 		args.inclusionProbabilities2.clear();
 		args.inclusionProbabilities2.insert(args.inclusionProbabilities2.begin(), inclusionProbabilities.begin(), inclusionProbabilities.end());
 		//They have to be rescaled first
-		for(int i = 0; i < (int)args.inclusionProbabilities2.size(); i++) args.inclusionProbabilities2[i] /= args.n - deterministicIndices;
+		for(int i = 0; i < (int)args.inclusionProbabilities2.size(); i++) args.inclusionProbabilities2[i] /= (args.n - nDeterministic);
 		//drafting procedure
-		std::vector<int> remaining;
-		remaining.reserve(nUnits);
-		for(int i = 0; i < nUnits; i++)
-		{
-			if(!args.deterministicInclusion[i] && ! args.zeroWeights[i]) remaining.push_back(i);
-		}
 		std::vector<double> accumulated;
 		accumulated.reserve(nUnits);
 		std::vector<int> equalProbabilityUnits;
 		boost::random::uniform_real_distribution<double> uniformDest;
-		for(int i = 0; i < (int)args.n - deterministicIndices; i++)
+		for(int i = 0; i < (int)args.n - nDeterministic; i++)
 		{
 			accumulated.clear();
 			mpfr_class sum = 0;
@@ -62,7 +65,7 @@ namespace sampling
 			indices.push_back(selectedUnit);
 			//Update the inclusion probabilities to reflect the sampled unit. See Rare Event Simulation Using Monte Carlo Methods, edited by Gerardo Rubino and Bruno Tuffin, p183. 
 			args.inclusionProbabilities3.resize(nUnits);
-			if(args.n - deterministicIndices - i - 1 == 0) 
+			if(args.n - nDeterministic - i - 1 == 0) 
 			{
 				break;
 			}
@@ -73,13 +76,13 @@ namespace sampling
 			{
 				if(j != selectedUnitInRemaining)
 				{
-					if(args.expExponentialParameters[selectedUnit] == args.expExponentialParameters[remaining[j]])
+					if(args.expExponentialParameters[selectedUnit].convert_to<double>() == args.expExponentialParameters[remaining[j]].convert_to<double>())
 					{
 						equalProbabilityUnits.push_back(remaining[j]);
 					}
 					else
 					{
-						args.inclusionProbabilities3[remaining[j]] = (args.expExponentialParameters[selectedUnit] * args.inclusionProbabilities2[remaining[j]] - args.expExponentialParameters[remaining[j]] * args.inclusionProbabilities2[selectedUnit]) / ((args.n - deterministicIndices - i - 1) * (args.expExponentialParameters[selectedUnit] - args.expExponentialParameters[remaining[j]]) * args.inclusionProbabilities2[selectedUnit]);
+						args.inclusionProbabilities3[remaining[j]] = (args.expExponentialParameters[selectedUnit] * args.inclusionProbabilities2[remaining[j]] - args.expExponentialParameters[remaining[j]] * args.inclusionProbabilities2[selectedUnit]) / ((args.n - nDeterministic - i - 1) * (args.expExponentialParameters[selectedUnit] - args.expExponentialParameters[remaining[j]]) * args.inclusionProbabilities2[selectedUnit]);
 						sumNotEqual -= args.inclusionProbabilities3[remaining[j]];
 					}
 				}

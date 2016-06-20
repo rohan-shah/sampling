@@ -13,30 +13,20 @@ namespace sampling
 		{}
 		//The vector of selected units
 		std::vector<int> indices;
-		//The inclusion probabilities. Contains nUnits entries, but only the ones corresponding to selected units are actually set.
-		//The input size variables for the sampling
 		std::vector<mpfr_class> weights;
-		//A copy of the sampling weights made after deterministically selected units are removed, and then the sizes are rescaled.
-		std::vector<mpfr_class> rescaledWeights;
 		//Number of units to select
 		std::size_t n;
-		//Vector indicating which units were deterministically selected
-		std::vector<bool> deterministicInclusion;
-		//Vector indicating which units had zero weight
-		std::vector<bool> zeroWeights;
 
-		//All the remaining members are internal working memory
-		//Units not subject to the usual sampling procedure. Essentially deterministicInclusion & zeroWeights
-		std::vector<bool> ignore;
 		std::vector<mpfr_class> exponentialParameters;
 		std::vector<mpfr_class> expExponentialParameters;
 		boost::numeric::ublas::matrix<mpfr_class> expNormalisingConstant;
+		std::vector<bool> deterministicInclusion, zeroWeights;
 	private:
 		conditionalPoissonArgs(const conditionalPoissonArgs& other);
 		conditionalPoissonArgs& operator=(const conditionalPoissonArgs& other);
 	};
 	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities);
-	void calculateExpNormalisingConstants(std::vector<mpfr_class>& expExponentialParameters, std::vector<mpfr_class>& exponentialParameters, boost::numeric::ublas::matrix<mpfr_class>& expNormalisingConstant, int n, int nUnits, std::vector<bool>& ignore);
+	void calculateExpNormalisingConstants(std::vector<mpfr_class>& expExponentialParameters, std::vector<mpfr_class>& exponentialParameters, boost::numeric::ublas::matrix<mpfr_class>& expNormalisingConstant, int n, int nUnits, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion);
 	void computeExponentialParameters(conditionalPoissonArgs& args);
 	void calculateExpNormalisingConstants(conditionalPoissonArgs& args);
 }
