@@ -2,7 +2,7 @@
 #include "conditionalPoissonSequential.h"
 BOOST_AUTO_TEST_CASE(conditionalPoissonSequential1, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonSequentialArgs args(false);
+	sampling::conditionalPoissonSequentialArgs args(true);
 	std::vector<int>& indices = args.indices;
 	std::vector<sampling::mpfr_class>& weights = args.weights;
 	std::vector<sampling::mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
@@ -27,6 +27,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSequential1, * boost::unit_test::toleranc
 	for(int i = 0; i < size; i++)
 	{
 		sampling::conditionalPoissonSequential(args, randomSource);
+		BOOST_TEST((int)inclusionProbabilities.size() == 3);
 		BOOST_TEST((int)indices.size() == 2);
 		std::sort(indices.begin(), indices.end());
 		if(indices[0] == 0 && indices[1] == 1)
@@ -82,7 +83,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSequential2, * boost::unit_test::toleranc
 }
 BOOST_AUTO_TEST_CASE(conditionalPoissonSequential3, * boost::unit_test::tolerance(0.00001))
 {
-	sampling::conditionalPoissonSequentialArgs args(false);
+	sampling::conditionalPoissonSequentialArgs args(true);
 	std::vector<int>& indices = args.indices;
 	std::vector<sampling::mpfr_class>& weights = args.weights;
 	std::vector<sampling::mpfr_class>& inclusionProbabilities = args.inclusionProbabilities;
@@ -110,6 +111,7 @@ BOOST_AUTO_TEST_CASE(conditionalPoissonSequential3, * boost::unit_test::toleranc
 	for(int i = 0; i < size; i++)
 	{
 		conditionalPoissonSequential(args, randomSource);
+		BOOST_TEST((int)inclusionProbabilities.size() == 6);
 		BOOST_TEST((int)indices.size() == 2);
 		std::sort(indices.begin(), indices.end());
 		if(indices[0] == 1 && indices[1] == 3)

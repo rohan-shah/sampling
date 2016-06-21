@@ -8,6 +8,7 @@ namespace sampling
 	{
 	public:
 		conditionalPoissonSequentialArgs(bool calculateInclusionProbabilities)
+			:calculateInclusionProbabilities(calculateInclusionProbabilities)
 		{}
 		std::vector<mpfr_class> inclusionProbabilities;
 		bool calculateInclusionProbabilities;
