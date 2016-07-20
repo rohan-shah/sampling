@@ -65,7 +65,7 @@ namespace sampling
 		std::fill(deterministicInclusion.begin(), deterministicInclusion.end(), false);
 		for(int i = 0; i < nUnits; i++)
 		{
-			if(weights[i] > 1 || weights[i] < 0) throw std::runtime_error("Weights must be between 0 and 1"); 
+			if(weights[i] < 0) throw std::runtime_error("Weights must be between 0 and 1"); 
 			if(weights[i] == 0)
 			{
 				nZeroWeights++;
