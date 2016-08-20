@@ -26,6 +26,7 @@ namespace sampling
 		conditionalPoissonArgs& operator=(const conditionalPoissonArgs& other);
 	};
 	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities);
+	void conditionalPoissonSecondOrderInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities, boost::numeric::ublas::matrix<mpfr_class>& secondOrder);
 	void calculateExpNormalisingConstants(std::vector<mpfr_class>& expExponentialParameters, std::vector<mpfr_class>& exponentialParameters, boost::numeric::ublas::matrix<mpfr_class>& expNormalisingConstant, int n, int nUnits, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion);
 	void computeExponentialParameters(conditionalPoissonArgs& args);
 	void calculateExpNormalisingConstants(conditionalPoissonArgs& args);

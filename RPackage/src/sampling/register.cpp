@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 #include <internal.h>
 #include "conditionalPoissonInclusion.h"
+#include "conditionalPoissonSecondInclusion.h"
+#include "setDefaultPrec.h"
 #ifdef _MSC_VER
 	#undef RcppExport
 	#define RcppExport extern "C" __declspec(dllexport)
@@ -9,6 +11,8 @@ extern "C" const char* package_name = "sampling";
 R_CallMethodDef callMethods[] = 
 {
 	{"conditionalPoissonInclusion", (DL_FUNC)&sampling::conditionalPoissonInclusion, 2},
+	{"conditionalPoissonSecondInclusion", (DL_FUNC)&sampling::conditionalPoissonSecondInclusion, 2},
+	{"setDefaultPrec", (DL_FUNC)&sampling::setDefaultPrec, 1},
 	{NULL, NULL, 0}
 };
 RcppExport void R_init_sampling(DllInfo *info)

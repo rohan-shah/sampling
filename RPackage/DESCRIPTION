@@ -14,3 +14,4 @@ Collate:
    'conditionalPoissonSecondInclusion.R'
    'Rcpp_exceptions.R'
    'onLoad.R'
+   'setDefaultPrec.R'

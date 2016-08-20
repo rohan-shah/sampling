@@ -7,7 +7,7 @@ else()
 endif()
 if(BUILD_R_PACKAGE)
 	find_package(Rcpp REQUIRED)
-	set(RFiles R/conditionalPoissonInclusion.R R/conditionalPoissonSecondInclusion.R R/onLoad.R)
+	set(RFiles R/conditionalPoissonInclusion.R R/conditionalPoissonSecondInclusion.R R/onLoad.R R/setDefaultPrec.R)
 	set(RPackageFiles NAMESPACE DESCRIPTION ${RFiles})
 	#Find location of Rcpp_exceptions.R 
 	get_property(RCPP_INCLUDE_DIRECTORIES TARGET Rcpp PROPERTY INTERFACE_INCLUDE_DIRECTORIES)

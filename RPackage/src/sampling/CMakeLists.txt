@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
-set(CppFiles register.cpp conditionalPoissonInclusion.cpp)
-set(HeaderFiles conditionalPoissonInclusion.h)
+set(CppFiles register.cpp conditionalPoissonInclusion.cpp conditionalPoissonSecondInclusion.cpp setDefaultPrec.cpp)
+set(HeaderFiles conditionalPoissonInclusion.h conditionalPoissonSecondInclusion.h setDefaultPrec.h)
 add_library(samplingRPackage SHARED ${CppFiles} ${HeaderFiles})
 target_link_libraries(samplingRPackage PUBLIC sampling Rcpp)
 set_target_properties(samplingRPackage PROPERTIES OUTPUT_NAME "sampling")
