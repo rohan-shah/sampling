@@ -1,0 +1,16 @@
+Package: sampling
+Type: Package
+Title: Sampling design package
+Version: 0.1
+Date: 2015-05-14
+Author: Rohan Shah
+Maintainer: Rohan Shah <cran@bookshah.com>
+Description: This package provides some limited interfaces to the sampling design code
+License: GPL v3
+LazyData: No
+Depends: Rmpfr
+Collate:
+   'conditionalPoissonInclusion.R'
+   'conditionalPoissonSecondInclusion.R'
+   'Rcpp_exceptions.R'
+   'onLoad.R'
