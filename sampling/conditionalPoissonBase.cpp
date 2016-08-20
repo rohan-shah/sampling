@@ -28,7 +28,7 @@ namespace sampling
 				}
 				else if(i != j && args.expExponentialParameters[i].convert_to<double>() == args.expExponentialParameters[j].convert_to<double>())
 				{
-					identical.push_back(j);
+					identical.push_back((int)j);
 				}
 				else
 				{
