@@ -1,6 +1,9 @@
 #include "conditionalPoissonBase.h"
 namespace sampling
 {
+	conditionalPoissonArgs::conditionalPoissonArgs(conditionalPoissonArgs&& other)
+		: indices(std::move(other.indices)), weights(std::move(other.weights)), n(other.n), exponentialParameters(std::move(other.exponentialParameters)), expExponentialParameters(std::move(other.expExponentialParameters)), expNormalisingConstant(std::move(other.expNormalisingConstant)), deterministicInclusion(std::move(other.deterministicInclusion)), zeroWeights(std::move(other.zeroWeights))
+	{}
 	void calculateExpNormalisingConstants(conditionalPoissonArgs& args)
 	{
 		std::vector<mpfr_class>& weights = args.weights;

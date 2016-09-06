@@ -21,6 +21,7 @@ namespace sampling
 		std::vector<mpfr_class> expExponentialParameters;
 		boost::numeric::ublas::matrix<mpfr_class> expNormalisingConstant;
 		std::vector<bool> deterministicInclusion, zeroWeights;
+		conditionalPoissonArgs(conditionalPoissonArgs&& other);
 	private:
 		conditionalPoissonArgs(const conditionalPoissonArgs& other);
 		conditionalPoissonArgs& operator=(const conditionalPoissonArgs& other);
