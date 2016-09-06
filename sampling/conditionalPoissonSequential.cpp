@@ -35,11 +35,11 @@ namespace sampling
 				double parameter;
 				if(args.n - nDeterministic - 1 - chosen == 0)
 				{
-					parameter = (args.expExponentialParameters[i] / args.expNormalisingConstant(i-skipped, args.n - nDeterministic - chosen - 1)).convert_to<double>();
+					parameter = mpfr_class(args.expExponentialParameters[i] / args.expNormalisingConstant(i-skipped, args.n - nDeterministic - chosen - 1)).convert_to<double>();
 				}
 				else
 				{
-					parameter = (args.expExponentialParameters[i] * args.expNormalisingConstant(i+1-skipped, args.n - nDeterministic - 1 - chosen - 1) / args.expNormalisingConstant(i-skipped, args.n - nDeterministic - chosen - 1)).convert_to<double>();
+					parameter = mpfr_class(args.expExponentialParameters[i] * args.expNormalisingConstant(i+1-skipped, args.n - nDeterministic - 1 - chosen - 1) / args.expNormalisingConstant(i-skipped, args.n - nDeterministic - chosen - 1)).convert_to<double>();
 				}
 #ifndef NDEBUG
 				if(parameter > 1) throw std::runtime_error("Internal error");

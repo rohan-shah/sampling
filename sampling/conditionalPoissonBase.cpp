@@ -153,12 +153,13 @@ namespace sampling
 		}
 		//Rescale so the exponential parameters sum no zero
 		mpfr_class toSubtract = sumExponentialParameters / (nUnits - excluded);
+		mpfr_class expToSubtract = exp(toSubtract);
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
 			{
 				args.exponentialParameters[i] -= toSubtract;
-				args.expExponentialParameters[i] = exp(args.exponentialParameters[i]);
+				args.expExponentialParameters[i] /= expToSubtract;
 			}
 		}
 	}
