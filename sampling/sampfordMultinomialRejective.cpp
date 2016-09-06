@@ -13,7 +13,7 @@ namespace sampling
 		std::vector<bool>& deterministicInclusion = args.deterministicInclusion;
 		std::vector<int> deterministicIndices;
 		int nDeterministic = 0, nZeroWeights = 0;
-		sampfordBase(args.n, deterministicIndices, weights, rescaledWeights, zeroWeights, deterministicInclusion, nDeterministic, nZeroWeights);
+		sampfordBase((int)args.n, deterministicIndices, weights, rescaledWeights, zeroWeights, deterministicInclusion, nDeterministic, nZeroWeights);
 		int nUnits = (int)weights.size();
 		if((int)args.n == nDeterministic)
 		{

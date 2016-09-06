@@ -15,7 +15,7 @@ namespace sampling
 		std::vector<mpfr_class>& weights = args.weights;
 		std::vector<mpfr_class>& rescaledWeights = args.rescaledWeights;
 		int nDeterministic = 0, nZeroWeights = 0;
-		sampfordBase(args.n, args.indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, nDeterministic, nZeroWeights);
+		sampfordBase((int)args.n, args.indices, weights, rescaledWeights, args.zeroWeights, args.deterministicInclusion, nDeterministic, nZeroWeights);
 		if(args.indices.size() == args.n)
 		{
 			return;

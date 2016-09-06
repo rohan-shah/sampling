@@ -1,6 +1,9 @@
 #include "conditionalPoissonBase.h"
 namespace sampling
 {
+	conditionalPoissonArgs::conditionalPoissonArgs(conditionalPoissonArgs&& other)
+		: indices(std::move(other.indices)), weights(std::move(other.weights)), n(other.n), exponentialParameters(std::move(other.exponentialParameters)), expExponentialParameters(std::move(other.expExponentialParameters)), expNormalisingConstant(std::move(other.expNormalisingConstant)), deterministicInclusion(std::move(other.deterministicInclusion)), zeroWeights(std::move(other.zeroWeights))
+	{}
 	void calculateExpNormalisingConstants(conditionalPoissonArgs& args)
 	{
 		std::vector<mpfr_class>& weights = args.weights;
@@ -9,6 +12,39 @@ namespace sampling
 		int nUnits = (int)weights.size();
 		//Now compute the inclusion probabilities
 		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n, nUnits, zeroWeights, deterministicInclusion);
+	}
+	void conditionalPoissonSecondOrderInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities, boost::numeric::ublas::matrix<mpfr_class>& secondOrder)
+	{
+		std::size_t nUnits = inclusionProbabilities.size();
+		secondOrder.resize(nUnits, nUnits);
+		std::vector<int> identical;
+		for(std::size_t i = 0; i < nUnits; i++)
+		{
+			mpfr_class remaining = args.n * inclusionProbabilities[i];
+			identical.clear();
+			for(std::size_t j = 0; j < nUnits; j++)
+			{
+				if(i == j)
+				{
+					secondOrder(i, j) = inclusionProbabilities[i];
+					remaining -= secondOrder(i, j);
+				}
+				else if(i != j && args.expExponentialParameters[i].convert_to<double>() == args.expExponentialParameters[j].convert_to<double>())
+				{
+					identical.push_back((int)j);
+				}
+				else
+				{
+					secondOrder(i, j) = (args.expExponentialParameters[i]/(args.expExponentialParameters[i] - args.expExponentialParameters[j])) * inclusionProbabilities[j] + (args.expExponentialParameters[j]/(args.expExponentialParameters[j] - args.expExponentialParameters[i])) * inclusionProbabilities[i];
+					remaining -= secondOrder(i, j);
+				}
+			}
+			remaining /= identical.size();
+			for(std::vector<int>::iterator k = identical.begin(); k != identical.end(); k++)
+			{
+				secondOrder(i, *k) = remaining;
+			}
+		}
 	}
 	void conditionalPoissonInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities)
 	{
