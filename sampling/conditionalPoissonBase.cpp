@@ -120,7 +120,12 @@ namespace sampling
 			if(deterministicInclusion[i]) nDeterministic++;
 		}
 		//We start by computing the normalising constants. First index is k, second is z. All indices in this loop are 1 indexed
-		expNormalisingConstant.resize(nUnits - nZeroWeights - nDeterministic, n - nDeterministic, false);
+
+		//Both constructing *and* destructing mpfr_class objects is expensive, so were need to make as few changes to the dimension here as possible. 
+		if ((int)expNormalisingConstant.size1() < nUnits - nZeroWeights - nDeterministic || (int)expNormalisingConstant.size2() < n - nDeterministic)
+		{
+			expNormalisingConstant.resize(std::max(nUnits - nZeroWeights - nDeterministic, (int)expNormalisingConstant.size1()), std::max(n - nDeterministic, (int)expNormalisingConstant.size2()), false);
+		}
 		//This will skip over the *ignored* units (the ones that were deterministically included)
 		int k = (int)expExponentialParameters.size();
 		for(int unitIndex = nUnits - nDeterministic - nZeroWeights; unitIndex >= 1; unitIndex--)
