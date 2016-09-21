@@ -2,7 +2,7 @@
 namespace sampling
 {
 	conditionalPoissonArgs::conditionalPoissonArgs(conditionalPoissonArgs&& other)
-		: indices(std::move(other.indices)), weights(std::move(other.weights)), n(other.n), exponentialParameters(std::move(other.exponentialParameters)), expExponentialParameters(std::move(other.expExponentialParameters)), expNormalisingConstant(std::move(other.expNormalisingConstant)), deterministicInclusion(std::move(other.deterministicInclusion)), zeroWeights(std::move(other.zeroWeights))
+		: indices(std::move(other.indices)), weights(std::move(other.weights)), n(other.n), expExponentialParameters(std::move(other.expExponentialParameters)), expNormalisingConstant(std::move(other.expNormalisingConstant)), deterministicInclusion(std::move(other.deterministicInclusion)), zeroWeights(std::move(other.zeroWeights))
 	{}
 	void calculateExpNormalisingConstants(conditionalPoissonArgs& args)
 	{
@@ -11,7 +11,7 @@ namespace sampling
 		std::vector<bool>& deterministicInclusion = args.deterministicInclusion;
 		int nUnits = (int)weights.size();
 		//Now compute the inclusion probabilities
-		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n, nUnits, zeroWeights, deterministicInclusion);
+		calculateExpNormalisingConstants(args.expExponentialParameters, args.expNormalisingConstant, (int)args.n, nUnits, zeroWeights, deterministicInclusion);
 	}
 	void conditionalPoissonSecondOrderInclusionProbabilities(conditionalPoissonArgs& args, std::vector<mpfr_class>& inclusionProbabilities, boost::numeric::ublas::matrix<mpfr_class>& secondOrder)
 	{
@@ -77,7 +77,7 @@ namespace sampling
 		{
 			throw std::runtime_error("Sample size is larger than the number of units with non-zero weights");
 		}
-		calculateExpNormalisingConstants(args.expExponentialParameters, args.exponentialParameters, args.expNormalisingConstant, (int)args.n, nUnits, zeroWeights, deterministicInclusion);
+		calculateExpNormalisingConstants(args.expExponentialParameters, args.expNormalisingConstant, (int)args.n, nUnits, zeroWeights, deterministicInclusion);
 		mpfr_class expNormalisingConstant = args.expNormalisingConstant(0, args.n - deterministicIndices - 1);
 		for(int unitCounter = 0; unitCounter < nUnits; unitCounter++)
 		{
@@ -95,14 +95,14 @@ namespace sampling
 			{
 				if((args.n - deterministicIndices- j) % 2 == 1)
 				{
-					inclusionProbabilities[unitCounter] -= args.expNormalisingConstant(0, j-2) / exp((j - 1)*args.exponentialParameters[unitCounter]);
+					inclusionProbabilities[unitCounter] -= args.expNormalisingConstant(0, j - 2) / boost::multiprecision::pow(args.expExponentialParameters[unitCounter], (j - 1));
 				}
 				else
 				{
-					inclusionProbabilities[unitCounter] += args.expNormalisingConstant(0, j-2) / exp((j - 1)*args.exponentialParameters[unitCounter]);
+					inclusionProbabilities[unitCounter] += args.expNormalisingConstant(0, j - 2) / boost::multiprecision::pow(args.expExponentialParameters[unitCounter], (j - 1));
 				}
 			}
-			inclusionProbabilities[unitCounter] *= exp((args.n - deterministicIndices) * args.exponentialParameters[unitCounter]) / expNormalisingConstant;
+			inclusionProbabilities[unitCounter] *= boost::multiprecision::pow(args.expExponentialParameters[unitCounter], (args.n - deterministicIndices)) / expNormalisingConstant;
 			if(inclusionProbabilities[unitCounter] <= 0)
 			{
 				std::stringstream ss;
@@ -111,7 +111,7 @@ namespace sampling
 			}
 		}
 	}
-	void calculateExpNormalisingConstants(std::vector<mpfr_class>& expExponentialParameters, std::vector<mpfr_class>& exponentialParameters, boost::numeric::ublas::matrix<mpfr_class>& expNormalisingConstant, int n, int nUnits, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion)
+	void calculateExpNormalisingConstants(std::vector<mpfr_class>& expExponentialParameters, boost::numeric::ublas::matrix<mpfr_class>& expNormalisingConstant, int n, int nUnits, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion)
 	{
 		int nZeroWeights = 0, nDeterministic = 0;;
 		for(int i = 0; i < nUnits; i++)
@@ -142,12 +142,12 @@ namespace sampling
 				}
 				else if(z == nUnits - nZeroWeights - nDeterministic - unitIndex + 1)
 				{
-					mpfr_class sum = 0;
+					mpfr_class product = 1;
 					for(int unitIndex2 = k; unitIndex2 <= (int)expExponentialParameters.size(); unitIndex2++)
 					{
-						if(!zeroWeights[unitIndex2-1] && !deterministicInclusion[unitIndex2-1]) sum += exponentialParameters[unitIndex2-1];
+						if(!zeroWeights[unitIndex2-1] && !deterministicInclusion[unitIndex2-1]) product *= expExponentialParameters[unitIndex2-1];
 					}
-					expNormalisingConstant(unitIndex-1, z-1) = exp(sum);
+					expNormalisingConstant(unitIndex-1, z-1) = product;
 #ifndef NDEBUG
 					assert(expNormalisingConstant(unitIndex-1, z-1) == expNormalisingConstant(unitIndex-1, z-1));
 #endif
@@ -168,34 +168,29 @@ namespace sampling
 		std::vector<mpfr_class>& weights = args.weights;
 		int nUnits = (int)weights.size();
 
-		args.exponentialParameters.resize(nUnits);
 		args.expExponentialParameters.resize(nUnits);
-		mpfr_class sumExponentialParameters = 0;
+		mpfr_class productExponentialParameters = 1;
 		int excluded = 0;
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
 			{
 				args.expExponentialParameters[i] = weights[i] / (1 - weights[i]);
-				args.exponentialParameters[i] = log(args.expExponentialParameters[i]);
-				sumExponentialParameters += args.exponentialParameters[i];
+				productExponentialParameters *= args.expExponentialParameters[i];
 			}
 			else
 			{
 				excluded++;
 				args.expExponentialParameters[i] = 0;
-				args.exponentialParameters[i] = 0;
 			}
 		}
 		//Rescale so the exponential parameters sum no zero
-		mpfr_class toSubtract = sumExponentialParameters / (nUnits - excluded);
-		mpfr_class expToSubtract = exp(toSubtract);
+		mpfr_class expToDivide = boost::multiprecision::pow(productExponentialParameters, 1.0 / (nUnits - excluded));
 		for(int i = 0; i < nUnits; i++)
 		{
 			if(!args.deterministicInclusion[i] && !args.zeroWeights[i])
 			{
-				args.exponentialParameters[i] -= toSubtract;
-				args.expExponentialParameters[i] /= expToSubtract;
+				args.expExponentialParameters[i] /= expToDivide;
 			}
 		}
 	}
