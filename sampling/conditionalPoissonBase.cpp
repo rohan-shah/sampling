@@ -120,7 +120,7 @@ namespace sampling
 			if(deterministicInclusion[i]) nDeterministic++;
 		}
 		//We start by computing the normalising constants. First index is k, second is z. All indices in this loop are 1 indexed
-		expNormalisingConstant.resize(nUnits - nZeroWeights - nDeterministic, n - nDeterministic);
+		expNormalisingConstant.resize(nUnits - nZeroWeights - nDeterministic, n - nDeterministic, false);
 		//This will skip over the *ignored* units (the ones that were deterministically included)
 		int k = (int)expExponentialParameters.size();
 		for(int unitIndex = nUnits - nDeterministic - nZeroWeights; unitIndex >= 1; unitIndex--)
