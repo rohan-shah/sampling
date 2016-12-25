@@ -1,5 +1,5 @@
 #include "samplingBase.h"
-namespace sampling
+namespace samplingDouble
 {
 	void samplingBase(int n, std::vector<int>& indices, std::vector<double>& weights, std::vector<bool>& zeroWeights, std::vector<bool>& deterministicInclusion, int& nDeterministic, int& nZeroWeights)
 	{
