@@ -16,6 +16,9 @@ namespace sampling
 			}
 		}
 	}
+}
+namespace samplingDouble
+{
 	void systematicSamplingDouble(const std::vector<double>& weights, double interval, std::vector<int>& indices, boost::mt19937& randomSource)
 	{
 		indices.clear();
