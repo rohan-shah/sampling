@@ -7,5 +7,9 @@ namespace samplingDouble
 {
 	void fearnheadGetKappa(std::vector<double>& sortedWeights, boost::mt19937& randomSource, int N, int& A, double& B);
 }
+namespace sampling
+{
+	void fearnheadGetKappa(std::vector<mpfr_class>& sortedWeights, boost::mt19937& randomSource, int N, int& A, mpfr_class& B);
+}
 #endif
 
