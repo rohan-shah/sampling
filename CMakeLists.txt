@@ -15,7 +15,7 @@ if(WIN32)
 	find_package(mpfr REQUIRED)
 else()
 	#mpfr needs to be listed as an imported target so that we can use target_link_librarie later on. If we don't have this then it just adds a -lmpfr which probably picks up the wrong thing. 
-	find_library(mpfr_LIBRARY mpfr)
+	find_library(mpfr_LIBRARY mpfr REQUIRED)
 	add_library(mpfr SHARED IMPORTED)
 	set_target_properties(mpfr PROPERTIES IMPORTED_LOCATION ${mpfr_LIBRARY})
 endif()

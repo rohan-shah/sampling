@@ -18,13 +18,40 @@ namespace sampling
 		std::size_t nUnits = inclusionProbabilities.size();
 		secondOrder.resize(nUnits, nUnits);
 		std::vector<int> identical;
+		std::vector<bool>& zeroWeights = args.zeroWeights;
+		std::vector<bool>& deterministicInclusion = args.deterministicInclusion;
+		int nDeterministicIndices = 0;
+		for(int i = 0; i < nUnits; i++)
+		{
+			if(deterministicInclusion[i])
+			{
+				nDeterministicIndices++;
+				inclusionProbabilities[i] = 1;
+			}
+		}
 		for(std::size_t i = 0; i < nUnits; i++)
 		{
-			mpfr_class remaining = args.n * inclusionProbabilities[i];
+			mpfr_class remaining = (args.n - nDeterministicIndices) * inclusionProbabilities[i];
 			identical.clear();
 			for(std::size_t j = 0; j < nUnits; j++)
 			{
-				if(i == j)
+				if(zeroWeights[i] || zeroWeights[j])
+				{
+					secondOrder(i, j) = 0;
+				}
+				else if(deterministicInclusion[i] && deterministicInclusion[j])
+				{
+					secondOrder(i, j) = 1;
+				}
+				else if(deterministicInclusion[i])
+				{
+					secondOrder(i, j) = inclusionProbabilities[j];
+				}
+				else if(deterministicInclusion[j])
+				{
+					secondOrder(i, j) = inclusionProbabilities[i];
+				}
+				else if(i == j)
 				{
 					secondOrder(i, j) = inclusionProbabilities[i];
 					remaining -= secondOrder(i, j);
