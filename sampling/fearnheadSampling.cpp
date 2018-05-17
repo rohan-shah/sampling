@@ -41,6 +41,7 @@ namespace samplingDouble
 		}
 
 		double interval = sumWeights / (args.n - args.indices.size());
+		if (interval <= 0) throw std::runtime_error("Internal error in fearnheadSampling");
 		double position = boost::random::uniform_real_distribution<>(0, interval)(randomSource);
 		for(int unit = 0; unit < (int)args.weights.size(); unit++)
 		{
