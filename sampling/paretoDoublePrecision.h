@@ -21,7 +21,7 @@ namespace samplingDouble
 		{
 			double statistic;
 			int order;
-			bool operator<(const paretoStatistic& other)
+			bool operator<(const paretoStatistic& other) const
 			{
 				return statistic < other.statistic;
 			}
